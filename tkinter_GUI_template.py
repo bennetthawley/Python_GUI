@@ -27,7 +27,22 @@ class SimpleApp(tk.Tk):
     ''' Define a method 'initialize' that creates all the GUI elements. 
     Provide 'self' (the application base tk.Tk constructor) as the input parameter '''
     def initialize(self):
-        pass
+        # Use "grid" layout style to place widgets in main application window.
+        self.grid()
+
+        ''' Add a text entry widget, named "entry" and place it in the window grid. 
+        Use "self.entry" to save a reference to "entry" within the application
+        so that the entry widget can be accessed outside of the initialize method. '''
+        self.entry = tk.Entry(self)
+        self.entry.grid(column=0,row=0,sticky='EW')
+        # Add a button widget, and place it in the window
+        button = tk.Button(self,text="Button")
+        button.grid(column=1,row=0)
+        # Add a label widget, and place it in the window
+        label = tk.Label(self,anchor='w',fg='white',bg='blue')
+        label.grid(column=0,row=1,columnspan=2,sticky='EW')
+        # Enable resizing of column 0 when the window is resized by user
+        self.grid_columnconfigure(0,weight=1)
 
 # Execute a 'main' when the program is run
 if __name__ == '__main__':
