@@ -1,17 +1,18 @@
 # import tkinter and rename to 'tk' for easier use
 import tkinter as tk
-# import ttk, giving access to additional fun widgets
-from tkinter import ttk
 
 ''' Create the class 'SimpleApp' to house the main application. Inherit the 
 base class behaviour of tk.Tk by entering "tk.Tk" in the parenthesis of the 
 class. This can be changed to ttk.Frame to inherit different 
 behaviour if needed.'''
+
+
 class SimpleApp(tk.Tk):
     ''' Create the 'Constructor' (__init__) method using 'def __init__'
     Create (self, parent) parameters for constructor method
     This __init__ method is used when an instance of SimpleApp is created
     or "instantiated" '''
+
     def __init__(self, parent):
         ''' Call the base __init__ method inherited from tk.Tk using the
         self and parent parameters. '''
@@ -24,8 +25,10 @@ class SimpleApp(tk.Tk):
         all the GUI elements. GUI elements include buttons, frames, 
         entry widgets, and others '''
         self.initialize()
+
     ''' Define a method 'initialize' that creates all the GUI elements. 
     Provide 'self' (the application base tk.Tk constructor) as the input parameter '''
+
     def initialize(self):
         # Use "grid" layout style to place widgets in main application window.
         self.grid()
@@ -33,16 +36,52 @@ class SimpleApp(tk.Tk):
         ''' Add a text entry widget, named "entry" and place it in the window grid. 
         Use "self.entry" to save a reference to "entry" within the application
         so that the entry widget can be accessed outside of the initialize method. '''
-        self.entry = tk.Entry(self)
-        self.entry.grid(column=0,row=0,sticky='EW')
-        # Add a button widget, and place it in the window
-        button = tk.Button(self,text="Button")
-        button.grid(column=1,row=0)
-        # Add a label widget, and place it in the window
-        label = tk.Label(self,anchor='w',fg='white',bg='blue')
-        label.grid(column=0,row=1,columnspan=2,sticky='EW')
+        self.entry_variable = tk.StringVar()
+        self.entry = tk.Entry(self, textvariable=self.entry_variable)
+        self.entry.grid(column=0, row=0, sticky='EW')
+        # Set a 'bind' method on the entry box to call the on_press_enter method
+        self.entry.bind('<Return>', self.on_press_enter)
+        # Set the tkinter string variable 'entry_variable' to a text string
+        self.entry_variable.set('Enter text here')
+
+        '''Add a button widget, place it in the window, and set the command to
+        run the 'on_button_click' method when clicked'''
+        button = tk.Button(self, text="Button", command=self.on_button_click)
+        button.grid(column=1, row=0)
+
+        # Create a tkinter string variable to use later
+        self.label_variable = tk.StringVar()
+        ''' Add a label widget, set its value to the tkinter string variable, 
+        and place it in the window with white font and blue background'''
+        label = tk.Label(self, textvariable=self.label_variable,
+                         anchor='w', fg='white', bg='blue')
+        label.grid(column=0, row=1, columnspan=2, sticky='EW')
+        # Set the tkinter string variable 'label_variable' to a text string
+        self.label_variable.set('Hello')
+
         # Enable resizing of column 0 when the window is resized by user
-        self.grid_columnconfigure(0,weight=1)
+        self.grid_columnconfigure(0, weight=1)
+
+        # Restrict window resizing to only horizontal
+        self.resizable(width=True, height=False)
+        # Update the GUI window to refresh any widget content
+        self.update()
+        # Set the size of the GUI to the initial needed size of the GUI
+        self.geometry(self.geometry())
+        # Set the cursor focus to the entry widget
+        self.entry.focus_set()
+        self.entry.selection_range(0, tk.END)
+
+    def on_button_click(self):
+        self.label_variable.set(self.entry_variable.get() + " You clicked the button")
+        self.entry.focus_set()
+        self.entry.selection_range(0, tk.END)
+
+    def on_press_enter(self):
+        self.label_variable.set(self.entry_variable.get() + " You pressed enter!")
+        self.entry.focus_set()
+        self.entry.selection_range(0, tk.END)
+
 
 # Execute a 'main' when the program is run
 if __name__ == '__main__':
