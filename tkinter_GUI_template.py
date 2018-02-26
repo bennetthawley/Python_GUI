@@ -2,6 +2,8 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
+import threading
+import time
 
 
 class TemplateGUI(tk.Tk):
@@ -10,7 +12,7 @@ class TemplateGUI(tk.Tk):
         tk.Tk.__init__(self, parent)
         self.parent = parent
         self.input_path = tk.StringVar()
-        self.input_path.set(r'/Users/Bennett/Documents/GitHub/Automate_the_boring_stuff')
+        self.input_path.set('<Input folder path>')
         self.second_path = tk.StringVar()
         self.second_path.set('<Input folder path>')
         self.style_main_window()
@@ -19,7 +21,7 @@ class TemplateGUI(tk.Tk):
 
     def style_main_window(self):
         self.title('Template GUI title')
-        #self.geometry('515x200')
+        # self.geometry('515x200')
         self.resizable(width=False, height=False)
         self.focus_force()
 
@@ -27,10 +29,7 @@ class TemplateGUI(tk.Tk):
         self.style = ttk.Style()
         self.style.configure('TEntry', foreground='purple')
         self.style.configure('TButton', foreground='red', padding=4)
-
-        # for element in self.winfo_children():
-        #     element.grid_configure(padx=4, pady=4)
-
+        self.style.configure('Horizontal.TProgressbar', padding=10)
 
     def create_widgets(self):
         self.label = ttk.Label(self, text='Template tkinter GUI')
@@ -65,6 +64,13 @@ class TemplateGUI(tk.Tk):
                                      command=self.on_button_click_run)
         self.button_run.grid(column=0, row=0)
 
+        self.frame_D = ttk.Labelframe(self)
+        self.frame_D.grid(column=0, row=6)
+
+        self.progress_bar = ttk.Progressbar(self.frame_D, orient='horizontal',
+                                            mode='indeterminate', length=200)
+        self.progress_bar.grid(column=0, row=0)
+
     def on_button_click_input(self):
         self.input_file_location = filedialog.askopenfilename()
         self.input_path.set(self.input_file_location)
@@ -74,13 +80,17 @@ class TemplateGUI(tk.Tk):
         self.second_path.set(self.second_file_location)
 
     def on_button_click_run(self):
-        self.update_idletasks()
+        self.start_thread()
 
-        self.label_result = ttk.Label(self.frame_C, text=self.entry_A1.get())
-        self.label_result.grid(column=0, row=1)
-        self.label_result2 = ttk.Label(self.frame_C, text=self.entry_B1.get())
-        self.label_result2.grid(column=0, row=2)
+    def undefined_process(self):
+        time.sleep(10)
+        print('done')
+        self.progress_bar.stop()
 
+    def start_thread(self):
+        self.thread_one = threading.Thread(target=self.undefined_process)
+        self.progress_bar.start()
+        self.thread_one.start()
 
 
 # Execute a 'main' when the program is run
