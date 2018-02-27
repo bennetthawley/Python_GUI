@@ -4,6 +4,7 @@ import time
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import ttk
+from tkinter import font
 
 
 class TemplateGUI(tk.Tk):
@@ -30,12 +31,11 @@ class TemplateGUI(tk.Tk):
         theme_colors = {'Primary': '#D3DADB', 'Second': '#525251', 'Third': '#3B627E',
                         'Fourth': '#5799C3', 'Fifth': '#8DCFDA', 'Sixth': '#B7F0ED'}
 
-        self.style.configure('TEntry',
-                             foreground=theme_colors['Third'],
-                             background=theme_colors['Sixth'])
+        self.style.map('TEntry',
+                             background=('active',theme_colors['Primary']))
         self.style.configure('TButton',
                              foreground=theme_colors['Third'],
-                             background=theme_colors['Sixth'],
+                             background=theme_colors['Primary'],
                              padding=5)
         self.style.configure('Horizontal.TProgressbar', padding=10)
 
@@ -65,18 +65,18 @@ class TemplateGUI(tk.Tk):
                                     command=self.on_button_click_second)
         self.button_B1.grid(column=1, row=0)
 
-        self.frame_C = ttk.Labelframe(self)
+        self.frame_C = ttk.Frame(self)
         self.frame_C.grid(column=0, row=5)
 
         self.button_run = ttk.Button(self.frame_C, text='Run',
                                      command=self.on_button_click_run)
         self.button_run.grid(column=0, row=0)
 
-        self.frame_D = ttk.Labelframe(self)
+        self.frame_D = ttk.Frame(self)
         self.frame_D.grid(column=0, row=6)
 
         self.progress_bar = ttk.Progressbar(self.frame_D, orient='horizontal',
-                                            mode='indeterminate', length=200)
+                                            mode='indeterminate', length=300)
         self.progress_bar.grid(column=0, row=0)
 
     def on_button_click_input(self):
