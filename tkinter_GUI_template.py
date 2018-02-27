@@ -1,9 +1,10 @@
 # import tkinter and rename to 'tk' for easier use
-import tkinter as tk
-from tkinter import ttk
-from tkinter import filedialog
 import threading
 import time
+import tkinter as tk
+from tkinter import filedialog
+from tkinter import font
+from tkinter import ttk
 
 
 class TemplateGUI(tk.Tk):
@@ -26,10 +27,13 @@ class TemplateGUI(tk.Tk):
         self.focus_force()
 
     def style_widgets(self):
+        tk.font.nametofont('')
+
         self.style = ttk.Style()
-        self.style.configure('TEntry', foreground='purple')
-        self.style.configure('TButton', foreground='red', padding=4)
+        self.style.configure('TEntry', foreground='red', background='black')
+        self.style.configure('TButton', foreground='red', padding=5)
         self.style.configure('Horizontal.TProgressbar', padding=10)
+
 
     def create_widgets(self):
         self.label = ttk.Label(self, text='Template tkinter GUI')
@@ -72,20 +76,22 @@ class TemplateGUI(tk.Tk):
         self.progress_bar.grid(column=0, row=0)
 
     def on_button_click_input(self):
-        self.input_file_location = filedialog.askopenfilename()
-        self.input_path.set(self.input_file_location)
+        input_file_location = filedialog.askopenfilename()
+        self.input_path.set(input_file_location)
 
     def on_button_click_second(self):
-        self.second_file_location = filedialog.askopenfilename()
-        self.second_path.set(self.second_file_location)
+        second_file_location = filedialog.askopenfilename()
+        self.second_path.set(second_file_location)
 
     def on_button_click_run(self):
+        self.button_run.configure(state='disable')
         self.start_thread()
 
     def undefined_process(self):
         time.sleep(10)
         print('done')
         self.progress_bar.stop()
+        self.button_run.configure(state='enable')
 
     def start_thread(self):
         self.thread_one = threading.Thread(target=self.undefined_process)
