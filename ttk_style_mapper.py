@@ -1,11 +1,12 @@
 import csv
+import pprint
 from tkinter import ttk
 
-widgets = {'TButton': ['Button.padding', 'Button.label'],
+widgets = {'TButton': ['Button.button', 'Button.padding', 'Button.label'],
            'TCheckbutton': ['Checkbutton.padding', 'Checkbutton.label'],
            'TCombobox': ['Combobox.padding', 'Combobox.textarea'],
-           'TEntry': ['Entry.padding', 'Entry.textarea'],
-           'TLabel': ['Label.padding', 'Label.label'],
+           'TEntry': ['Entry.field', 'Entry.padding', 'Entry.textarea'],
+           'TLabel': ['Label.border', 'Label.padding', 'Label.label'],
            'TMenubutton': ['Menubutton.padding', 'Menubutton.label'],
            'TRadiobutton': ['Radiobutton.padding', 'Radiobutton.label'],
            'Horizontal.TScale': ['Horizontal.Scale.trough'],
@@ -40,4 +41,5 @@ def write_csv(name):
                 writer.writerow({fieldnames[0]: key, fieldnames[1]: value, fieldnames[2]: element_options})
 
 
+pprint.pprint(print_elements('TButton'))
 write_csv('ttk_style_options.csv')

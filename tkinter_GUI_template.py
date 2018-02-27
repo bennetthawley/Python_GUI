@@ -3,7 +3,6 @@ import threading
 import time
 import tkinter as tk
 from tkinter import filedialog
-from tkinter import font
 from tkinter import ttk
 
 
@@ -16,6 +15,7 @@ class TemplateGUI(tk.Tk):
         self.input_path.set('<Input folder path>')
         self.second_path = tk.StringVar()
         self.second_path.set('<Input folder path>')
+        self.style = ttk.Style()
         self.style_main_window()
         self.create_widgets()
         self.style_widgets()
@@ -27,13 +27,17 @@ class TemplateGUI(tk.Tk):
         self.focus_force()
 
     def style_widgets(self):
-        tk.font.nametofont('')
+        theme_colors = {'Primary': '#D3DADB', 'Second': '#525251', 'Third': '#3B627E',
+                        'Fourth': '#5799C3', 'Fifth': '#8DCFDA', 'Sixth': '#B7F0ED'}
 
-        self.style = ttk.Style()
-        self.style.configure('TEntry', foreground='red', background='black')
-        self.style.configure('TButton', foreground='red', padding=5)
+        self.style.configure('TEntry',
+                             foreground=theme_colors['Third'],
+                             background=theme_colors['Sixth'])
+        self.style.configure('TButton',
+                             foreground=theme_colors['Third'],
+                             background=theme_colors['Sixth'],
+                             padding=5)
         self.style.configure('Horizontal.TProgressbar', padding=10)
-
 
     def create_widgets(self):
         self.label = ttk.Label(self, text='Template tkinter GUI')
