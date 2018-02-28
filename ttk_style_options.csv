@@ -1,30 +1,31 @@
-Widget               ,Element                        ,Options
-Treeview             ,Treeview.field                 ,"('-fieldbackground', '-borderwidth')"
-Treeview             ,Treeview.padding               ,"('-padding', '-relief', '-shiftrelief')"
-TCheckbutton         ,Checkbutton.padding            ,"('-padding', '-relief', '-shiftrelief')"
-TCheckbutton         ,Checkbutton.label              ,"('-compound', '-space', '-text', '-font', '-foreground', '-underline', '-width', '-anchor', '-justify', '-wraplength', '-embossed', '-image', '-stipple', '-background')"
-Horizontal.TScale    ,Horizontal.Scale.trough        ,"('-from', '-to', '-value', '-orient')"
-Vertical.TScrollbar  ,Vertical.Scrollbar.trough      ,"('-borderwidth', '-troughcolor', '-troughrelief')"
-Vertical.TScrollbar  ,Vertical.Scrollbar.uparrow     ,"('-background', '-relief', '-borderwidth', '-arrowcolor', '-arrowsize')"
-Vertical.TScrollbar  ,Vertical.Scrollbar.downarrow   ,"('-background', '-relief', '-borderwidth', '-arrowcolor', '-arrowsize')"
-Vertical.TScrollbar  ,Horizontal.Scrollbar.thumb     ,"('-orient', '-width', '-relief', '-background', '-borderwidth')"
-TEntry               ,Entry.field                    ,"('-background',)"
-TEntry               ,Entry.padding                  ,"('-padding', '-relief', '-shiftrelief')"
-TEntry               ,Entry.textarea                 ,"('-font', '-width')"
-TButton              ,Button.button                  ,()
-TButton              ,Button.padding                 ,"('-padding', '-relief', '-shiftrelief')"
-TButton              ,Button.label                   ,"('-compound', '-space', '-text', '-font', '-foreground', '-underline', '-width', '-anchor', '-justify', '-wraplength', '-embossed', '-image', '-stipple', '-background')"
-TRadiobutton         ,Radiobutton.padding            ,"('-padding', '-relief', '-shiftrelief')"
-TRadiobutton         ,Radiobutton.label              ,"('-compound', '-space', '-text', '-font', '-foreground', '-underline', '-width', '-anchor', '-justify', '-wraplength', '-embossed', '-image', '-stipple', '-background')"
-TMenubutton          ,Menubutton.padding             ,"('-padding', '-relief', '-shiftrelief')"
-TMenubutton          ,Menubutton.label               ,"('-compound', '-space', '-text', '-font', '-foreground', '-underline', '-width', '-anchor', '-justify', '-wraplength', '-embossed', '-image', '-stipple', '-background')"
-Horizontal.TScrollbar,Horizontal.Scrollbar.trough    ,"('-borderwidth', '-troughcolor', '-troughrelief')"
-Horizontal.TScrollbar,Horizontal.Scrollbar.leftarrow ,"('-background', '-relief', '-borderwidth', '-arrowcolor', '-arrowsize')"
-Horizontal.TScrollbar,Horizontal.Scrollbar.rightarrow,"('-background', '-relief', '-borderwidth', '-arrowcolor', '-arrowsize')"
-Horizontal.TScrollbar,Horizontal.Scrollbar.thumb     ,"('-orient', '-width', '-relief', '-background', '-borderwidth')"
-Vertical.TScale      ,Vertical.Scale.trough          ,"('-from', '-to', '-value', '-orient')"
-TLabel               ,Label.border                   ,"('-background', '-borderwidth', '-relief')"
-TLabel               ,Label.padding                  ,"('-padding', '-relief', '-shiftrelief')"
-TLabel               ,Label.label                    ,"('-compound', '-space', '-text', '-font', '-foreground', '-underline', '-width', '-anchor', '-justify', '-wraplength', '-embossed', '-image', '-stipple', '-background')"
-TCombobox            ,Combobox.padding               ,"('-padding', '-relief', '-shiftrelief')"
-TCombobox            ,Combobox.textarea              ,"('-font', '-width')"
+Widget,Element,Options
+TButton,Button.button,()
+TButton,Button.padding,"('padding', 'relief', 'shiftrelief')"
+TButton,Button.label,"('compound', 'space', 'text', 'font', 'foreground', 'underline', 'width', 'anchor', 'justify', 'wraplength', 'embossed', 'image', 'stipple', 'background')"
+TButton,Button.focus,()
+TCheckbutton,Checkbutton.padding,"('padding', 'relief', 'shiftrelief')"
+TCheckbutton,Checkbutton.label,"('compound', 'space', 'text', 'font', 'foreground', 'underline', 'width', 'anchor', 'justify', 'wraplength', 'embossed', 'image', 'stipple', 'background')"
+TCombobox,Combobox.padding,"('padding', 'relief', 'shiftrelief')"
+TCombobox,Combobox.textarea,"('font', 'width')"
+TEntry,Entry.field,()
+TEntry,Entry.padding,"('padding', 'relief', 'shiftrelief')"
+TEntry,Entry.textarea,"('font', 'width')"
+TLabel,Label.border,"('relief',)"
+TLabel,Label.padding,"('padding', 'relief', 'shiftrelief')"
+TLabel,Label.label,"('compound', 'space', 'text', 'font', 'foreground', 'underline', 'width', 'anchor', 'justify', 'wraplength', 'embossed', 'image', 'stipple', 'background')"
+TMenubutton,Menubutton.padding,"('padding', 'relief', 'shiftrelief')"
+TMenubutton,Menubutton.label,"('compound', 'space', 'text', 'font', 'foreground', 'underline', 'width', 'anchor', 'justify', 'wraplength', 'embossed', 'image', 'stipple', 'background')"
+TRadiobutton,Radiobutton.padding,"('padding', 'relief', 'shiftrelief')"
+TRadiobutton,Radiobutton.label,"('compound', 'space', 'text', 'font', 'foreground', 'underline', 'width', 'anchor', 'justify', 'wraplength', 'embossed', 'image', 'stipple', 'background')"
+Horizontal.TScale,Horizontal.Scale.trough,()
+Vertical.TScale,Vertical.Scale.trough,()
+Horizontal.TScrollbar,Horizontal.Scrollbar.trough,()
+Horizontal.TScrollbar,Horizontal.Scrollbar.leftarrow,()
+Horizontal.TScrollbar,Horizontal.Scrollbar.rightarrow,()
+Horizontal.TScrollbar,Horizontal.Scrollbar.thumb,()
+Vertical.TScrollbar,Vertical.Scrollbar.trough,()
+Vertical.TScrollbar,Vertical.Scrollbar.uparrow,()
+Vertical.TScrollbar,Vertical.Scrollbar.downarrow,()
+Vertical.TScrollbar,Horizontal.Scrollbar.thumb,()
+Treeview,Treeview.field,()
+Treeview,Treeview.padding,"('padding', 'relief', 'shiftrelief')"

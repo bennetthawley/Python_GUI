@@ -17,27 +17,25 @@ class TemplateGUI(tk.Tk):
         self.second_path = tk.StringVar()
         self.second_path.set('<Input folder path>')
         self.style = ttk.Style()
-        self.style_main_window()
         self.create_widgets()
         self.style_widgets()
-
-    def style_main_window(self):
-        self.title('Template GUI title')
-        # self.geometry('515x200')
-        self.resizable(width=False, height=False)
-        self.focus_force()
 
     def style_widgets(self):
         theme_colors = {'Primary': '#D3DADB', 'Second': '#525251', 'Third': '#3B627E',
                         'Fourth': '#5799C3', 'Fifth': '#8DCFDA', 'Sixth': '#B7F0ED'}
-
-        self.style.map('TEntry',
-                             background=('active',theme_colors['Primary']))
-        self.style.configure('TButton',
+        self.title('Template GUI title')
+        self.resizable(width=False, height=False)
+        self.configure(background=theme_colors['Fifth'])
+        self.focus_force()
+        self.style.configure('.',
+                             font='helvetica 12 bold',
                              foreground=theme_colors['Third'],
-                             background=theme_colors['Primary'],
-                             padding=5)
-        self.style.configure('Horizontal.TProgressbar', padding=10)
+                             background=theme_colors['Fifth'])
+        # self.style.configure('TEntry',
+        #                      foreground=theme_colors['Third'])
+        # self.style.configure('TButton',
+        #                      font='helvetica 12 bold',
+        #                      foreground=theme_colors['Third'])
 
     def create_widgets(self):
         self.label = ttk.Label(self, text='Template tkinter GUI')
