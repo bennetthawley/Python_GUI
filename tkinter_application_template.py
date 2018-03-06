@@ -1,42 +1,111 @@
 import tkinter as tk
 from tkinter import ttk
+from tkinter import filedialog
+from tkinter import messagebox
+import threading
+import time
 
 
+# noinspection PyUnreachableCode
 class MainApplication(tk.Tk):
 
     def __init__(self, parent, *args, **kwargs):
         tk.Tk.__init__(self, parent, *args, **kwargs)
         self.parent = parent
+        self.input_variable = tk.StringVar()
+        self.second_variable = tk.StringVar()
+
+        self.configure_main_gui()
+        self.create_main_widgets()
+
+        self.main_thread = threading.Thread(target=self.processing_function)
+
+    def configure_main_gui(self):
         self.title('tkinter application v1.0')
         self.resizable(width=False, height=False)
         self.focus_force()
 
-        self.input_variable = tk.StringVar()
-        self.second_variable = tk.StringVar()
-        self.main_frame = ttk.Frame(self)
+    def create_main_widgets(self):
+        main_frame = ttk.Frame(self)
+        main_frame.grid(column=0, row=0, sticky='nw')
 
-        self.create_main_widgets(self.main_frame)
+        main_label = ttk.Label(main_frame, text='Main Label')
+        main_label.grid(column=0, row=0, sticky='w', padx=4, pady=4)
 
-    def create_main_widgets(self, frame):
+        input_frame = ttk.Labelframe(main_frame, text='Input Frame')
+        input_frame.grid(column=0, row=1, sticky='ew', padx=4, pady=4)
 
-        frame.grid(column=0, row=0, sticky='nsew')
+        input_entry = ttk.Entry(input_frame, textvariable=self.input_variable,
+                                width=90)
+        input_entry.grid(column=0, row=0, sticky='ew', padx=4, pady=4)
 
-        main_label = ttk.Label(frame, text='Main Label')
-        main_label.grid(column=0, row=0, sticky='nsew', padx=4, pady=4)
+        input_button = ttk.Button(input_frame, text='Browse',
+                                  command=self.get_input_filepath)
+        input_button.grid(column=1, row=0, sticky='ew', padx=4, pady=4)
 
-        self.file_entry_frame(frame, self.input_variable, 'Input Frame')
-        self.file_entry_frame(frame, self.second_variable, 'Second Input Frame')
+        second_frame = ttk.Labelframe(main_frame, text='Second Frame')
+        second_frame.grid(column=0, row=2, sticky='ew', padx=4, pady=4)
 
+        second_entry = ttk.Entry(second_frame, textvariable=self.second_variable,
+                                 width=90)
+        second_entry.grid(column=0, row=0, sticky='ew', padx=4, pady=4)
 
-    def file_entry_frame(self, parent_frame, tk_string_variable, frame_label):
+        second_button = ttk.Button(second_frame, text='Browse',
+                                   command=self.get_second_filepath)
+        second_button.grid(column=1, row=0, sticky='ew', padx=4, pady=4)
 
-        input_frame = ttk.Labelframe(parent_frame, text=frame_label)
-        input_frame.grid(column=0, row=0, sticky='nsew')
+        run_button = ttk.Button(main_frame, text='Run',
+                                command=self.run_application)
+        run_button.grid(column=0, row=3, padx=4, pady=4)
 
-        input_field = ttk.Entry(input_frame, textvariable=tk_string_variable)
-        input_field.grid(column=0, row=1, sticky='nsew', padx=6, pady=6)
+        self.processing_frame = ttk.Labelframe(main_frame, text='Processing Frame')
 
+        self.status_bar = ttk.Progressbar(self.processing_frame, mode='indeterminate',
+                                          length=300)
+        self.status_bar.grid(column=0, row=0, padx=4, pady=4)
+        self.messages_text = tk.Text(self.processing_frame)
+        self.messages_text.configure(state='disabled')
+        self.messages_text.grid(column=0, row=1, padx=4, pady=4, sticky='ew')
 
+    def get_input_filepath(self):
+        input_filepath = filedialog.askopenfilename(title='Select Input File')
+        self.input_variable.set(input_filepath)
+
+    def get_second_filepath(self):
+        input_filepath = filedialog.askdirectory(title='Select Input Directory')
+        self.second_variable.set(input_filepath)
+
+    def run_application(self):
+        try:
+            self.processing_frame.grid(column=0, row=4, padx=4, pady=4)
+            #self.clear_messages()
+            self.status_bar.start(10)
+            self.write_to_messages('Input: {}\n'.format(self.input_variable.get()))
+            self.write_to_messages('Processing with: {}\n'.format(self.second_variable.get()))
+            self.main_thread.start()
+        except Exception as e:
+            self.status_bar.stop()
+            return e
+            messagebox.showerror('Error', e)
+
+    def processing_function(self):
+        try:
+            time.sleep(5)
+            self.write_to_messages('process has completed!')
+            self.status_bar.stop()
+        except Exception as e:
+            self.status_bar.stop()
+            return e
+            messagebox.showerror('Error', e)
+
+    def write_to_messages(self, message):
+        self.messages_text.configure(state='normal')
+        self.messages_text.insert('end', message)
+        self.messages_text.configure(state='disabled')
+
+    def clear_messages(self):
+        for message in self.messages_text.:
+            self.messages_text.tag_delete(tag)
 
 
 if __name__ == '__main__':
