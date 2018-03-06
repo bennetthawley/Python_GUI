@@ -22,13 +22,46 @@ class MainApplication(tk.Tk):
 
         self.configure_main_gui()
         self.create_main_widgets()
-
-
+        self.style_widgets()
 
     def configure_main_gui(self):
         self.title('tkinter application v1.0')
         self.resizable(width=False, height=False)
         self.focus_force()
+
+    def style_widgets(self):
+        theme_colors = {'Primary': '#D3DADB',
+                        'Second': '#525251',
+                        'Third': '#3B627E',
+                        'Fourth': '#5799C3',
+                        'Fifth': '#8DCFDA',
+                        'Sixth': '#B7F0ED'}
+        style = ttk.Style(self)
+        font = 'helvetica 12 bold'
+        style.configure('.', font=font,
+                             foreground=theme_colors['Third'],
+                             background=theme_colors['Fifth'])
+        style.configure('TButton', font=font,
+                             foreground=theme_colors['Third'],
+                             background=theme_colors['Fifth'])
+        style.configure('TEntry', font=font,
+                             foreground=theme_colors['Third'],
+                             background=theme_colors['Fifth'])
+        style.configure('TCheckbutton', font=font,
+                             foreground=theme_colors['Third'],
+                             background=theme_colors['Fifth'])
+        style.configure('TFrame', font=font,
+                             foreground=theme_colors['Third'],
+                             background=theme_colors['Fifth'])
+        style.configure('TLabel', font=font,
+                             foreground=theme_colors['Third'],
+                             background=theme_colors['Fifth'])
+        style.configure('TLabelFrame', font=font,
+                             foreground=theme_colors['Third'],
+                             background=theme_colors['Fifth'])
+        style.configure('Horizontal.TProgressbar', font=font,
+                             foreground=theme_colors['Third'],
+                             background=theme_colors['Fifth'])
 
     def create_main_widgets(self):
         try:
