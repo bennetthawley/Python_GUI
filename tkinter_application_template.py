@@ -1,12 +1,11 @@
-import tkinter as tk
-from tkinter import ttk
-from tkinter import filedialog
-from tkinter import messagebox
 import threading
 import time
+import tkinter as tk
+from tkinter import filedialog
+from tkinter import messagebox
+from tkinter import ttk
 
 
-# noinspection PyUnreachableCode
 class MainApplication(tk.Tk):
 
     def __init__(self, parent, *args, **kwargs):
@@ -59,11 +58,13 @@ class MainApplication(tk.Tk):
         run_button.grid(column=0, row=3, padx=4, pady=4)
 
         self.processing_frame = ttk.Labelframe(main_frame, text='Processing Frame')
+        self.processing_frame.grid(column=0, row=4, padx=4, pady=4)
 
         self.status_bar = ttk.Progressbar(self.processing_frame, mode='indeterminate',
                                           length=300)
         self.status_bar.grid(column=0, row=0, padx=4, pady=4)
-        self.messages_text = tk.Text(self.processing_frame)
+
+        self.messages_text = tk.Text(self.processing_frame, wrap=tk.WORD)
         self.messages_text.configure(state='disabled')
         self.messages_text.grid(column=0, row=1, padx=4, pady=4, sticky='ew')
 
@@ -77,11 +78,9 @@ class MainApplication(tk.Tk):
 
     def run_application(self):
         try:
-            self.processing_frame.grid(column=0, row=4, padx=4, pady=4)
-            #self.clear_messages()
-            self.status_bar.start(10)
-            self.write_to_messages('Input: {}\n'.format(self.input_variable.get()))
-            self.write_to_messages('Processing with: {}\n'.format(self.second_variable.get()))
+            self.clear_messages()
+            self.status_bar.start()
+            self.write_start_message()
             self.main_thread.start()
         except Exception as e:
             self.status_bar.stop()
@@ -91,7 +90,7 @@ class MainApplication(tk.Tk):
     def processing_function(self):
         try:
             time.sleep(5)
-            self.write_to_messages('process has completed!')
+            self.write_to_messages('Process has completed!')
             self.status_bar.stop()
         except Exception as e:
             self.status_bar.stop()
@@ -99,13 +98,42 @@ class MainApplication(tk.Tk):
             messagebox.showerror('Error', e)
 
     def write_to_messages(self, message):
-        self.messages_text.configure(state='normal')
-        self.messages_text.insert('end', message)
-        self.messages_text.configure(state='disabled')
+        try:
+            self.messages_text.configure(state='normal')
+            self.messages_text.insert('end', message)
+            self.messages_text.configure(state='disabled')
+        except Exception as e:
+            self.status_bar.stop()
+            return e
+            messagebox.showerror('Error', e)
 
     def clear_messages(self):
-        for message in self.messages_text.:
-            self.messages_text.tag_delete(tag)
+        try:
+            self.messages_text.configure(state='normal')
+            self.messages_text.delete('1.0', tk.END)
+            self.messages_text.configure(state='disabled')
+        except Exception as e:
+            self.status_bar.stop()
+            return e
+            messagebox.showerror('Error', e)
+
+    def write_start_message(self):
+        try:
+            self.messages_text.configure(state='normal')
+            self.messages_text.insert('end', '{}Run: {}{}\n\n'.format(
+                ('=' * 5), time.strftime("%c"), ('=' * 5)))
+
+            self.messages_text.insert('end', 'Input: {}\n\n'.format(
+                self.input_variable.get()))
+
+            self.messages_text.insert('end', 'Processing with: {}\n\n'.format(
+                self.second_variable.get()))
+
+            self.messages_text.configure(state='disabled')
+        except Exception as e:
+            self.status_bar.stop()
+            return e
+            messagebox.showerror('Error', e)
 
 
 if __name__ == '__main__':
