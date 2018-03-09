@@ -30,38 +30,37 @@ class MainApplication(tk.Tk):
         self.focus_force()
 
     def style_widgets(self):
-        theme_colors = {'Primary': '#D3DADB',
-                        'Second': '#525251',
-                        'Third': '#3B627E',
-                        'Fourth': '#5799C3',
-                        'Fifth': '#8DCFDA',
-                        'Sixth': '#B7F0ED'}
+        theme_colors = {'Primary': '#000000',
+                        'Second': '#0d324d',
+                        'Third': '#4f7cac',
+                        'Fourth': '#c0e0de',
+                        'Fifth': '#3c474b'}
         style = ttk.Style(self)
         font = 'helvetica 12 bold'
         style.configure('.', font=font,
-                             foreground=theme_colors['Third'],
-                             background=theme_colors['Fifth'])
+                        foreground=theme_colors['Second'],
+                        background=theme_colors['Fifth'])
         style.configure('TButton', font=font,
-                             foreground=theme_colors['Third'],
-                             background=theme_colors['Fifth'])
+                        foreground=theme_colors['Second'],
+                        background=theme_colors['Fifth'])
         style.configure('TEntry', font=font,
-                             foreground=theme_colors['Third'],
-                             background=theme_colors['Fifth'])
+                        foreground=theme_colors['Second'],
+                        background=theme_colors['Fifth'])
         style.configure('TCheckbutton', font=font,
-                             foreground=theme_colors['Third'],
-                             background=theme_colors['Fifth'])
+                        foreground=theme_colors['Second'],
+                        background=theme_colors['Fifth'])
         style.configure('TFrame', font=font,
-                             foreground=theme_colors['Third'],
-                             background=theme_colors['Fifth'])
+                        foreground=theme_colors['Second'],
+                        background=theme_colors['Fifth'])
         style.configure('TLabel', font=font,
-                             foreground=theme_colors['Third'],
-                             background=theme_colors['Fifth'])
+                        foreground=theme_colors['Second'],
+                        background=theme_colors['Fifth'])
         style.configure('TLabelFrame', font=font,
-                             foreground=theme_colors['Third'],
-                             background=theme_colors['Fifth'])
+                        foreground=theme_colors['Second'],
+                        background=theme_colors['Fifth'])
         style.configure('Horizontal.TProgressbar', font=font,
-                             foreground=theme_colors['Third'],
-                             background=theme_colors['Fifth'])
+                        foreground=theme_colors['Second'],
+                        background=theme_colors['Fifth'])
 
     def create_main_widgets(self):
         try:
@@ -124,7 +123,6 @@ class MainApplication(tk.Tk):
                                          onvalue='Button_3', offvalue='')
             checkbox_3.grid(column=1, row=2, sticky='ew', padx=2, pady=2)
 
-
             run_button = ttk.Button(main_frame, text='Run',
                                     command=self.run_application)
             run_button.grid(column=0, row=4, padx=4, pady=4)
@@ -147,7 +145,7 @@ class MainApplication(tk.Tk):
         self.input_variable.set(input_filepath)
 
     def get_second_filepath(self):
-        input_filepath = filedialog.askdirectory(title='Select Input Directory')
+        input_filepath = tkFileDialog.askdirectory(title='Select Input Directory')
         self.second_variable.set(input_filepath)
 
     def run_application(self):
@@ -209,6 +207,7 @@ class MainApplication(tk.Tk):
         except Exception as e:
             self.status_bar.stop()
             return e
+
 
 if __name__ == '__main__':
     app = MainApplication(None)
