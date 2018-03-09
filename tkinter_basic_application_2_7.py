@@ -30,37 +30,47 @@ class MainApplication(tk.Tk):
         self.focus_force()
 
     def style_widgets(self):
-        theme_colors = {'Primary': '#000000',
-                        'Second': '#0d324d',
-                        'Third': '#4f7cac',
-                        'Fourth': '#c0e0de',
+        theme_colors = {'foreground': '#c0e0de',
+                        'background': '#0d324d',
+                        'Third': '#000000',
+                        'Fourth': '#4f7cac',
                         'Fifth': '#3c474b'}
         style = ttk.Style(self)
-        font = 'helvetica 12 bold'
+        style.theme_use('clam')
+        tkFont.families(self)
+        font = 'default 16 bold'
         style.configure('.', font=font,
-                        foreground=theme_colors['Second'],
-                        background=theme_colors['Fifth'])
-        style.configure('TButton', font=font,
-                        foreground=theme_colors['Second'],
-                        background=theme_colors['Fifth'])
-        style.configure('TEntry', font=font,
-                        foreground=theme_colors['Second'],
-                        background=theme_colors['Fifth'])
-        style.configure('TCheckbutton', font=font,
-                        foreground=theme_colors['Second'],
-                        background=theme_colors['Fifth'])
-        style.configure('TFrame', font=font,
-                        foreground=theme_colors['Second'],
-                        background=theme_colors['Fifth'])
-        style.configure('TLabel', font=font,
-                        foreground=theme_colors['Second'],
-                        background=theme_colors['Fifth'])
-        style.configure('TLabelFrame', font=font,
-                        foreground=theme_colors['Second'],
-                        background=theme_colors['Fifth'])
-        style.configure('Horizontal.TProgressbar', font=font,
-                        foreground=theme_colors['Second'],
-                        background=theme_colors['Fifth'])
+                        foreground=theme_colors['foreground'],
+                        background=theme_colors['background'],
+                        fieldbackground=theme_colors['Fifth'],
+                        bordercolor=theme_colors['foreground'],
+                        lightcolor=theme_colors['foreground'],
+                        darkcolor=theme_colors['background'],
+                        troughcolor=theme_colors['background'],
+                        borderwidth=2,
+                        relief=theme_colors['foreground']
+                        )
+        # style.configure('TButton', font=font,
+        #                 foreground=theme_colors['foreground'],
+        #                 background=theme_colors['background'])
+        # style.configure('TEntry', font=font,
+        #                 foreground=theme_colors['foreground'],
+        #                 background=theme_colors['background'])
+        # style.configure('TCheckbutton', font=font,
+        #                 foreground=theme_colors['foreground'],
+        #                 background=theme_colors['background'])
+        # style.configure('TFrame', font=font,
+        #                 foreground=theme_colors['foreground'],
+        #                 background=theme_colors['background'])
+        # style.configure('TLabel', font=font,
+        #                 foreground=theme_colors['foreground'],
+        #                 background=theme_colors['background'])
+        # style.configure('TLabelFrame', font=font,
+        #                 foreground=theme_colors['foreground'],
+        #                 background=theme_colors['background'])
+        # style.configure('Horizontal.TProgressbar', font=font,
+        #                 foreground=theme_colors['foreground'],
+        #                 background=theme_colors['background'])
 
     def create_main_widgets(self):
         try:
