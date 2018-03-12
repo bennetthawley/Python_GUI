@@ -20,57 +20,59 @@ class MainApplication(tk.Tk):
         self.checkbox_variable_1 = tk.StringVar()
         self.checkbox_variable_2 = tk.StringVar()
         self.checkbox_variable_3 = tk.StringVar()
+        self.combobox_variable = tk.StringVar()
         self.configure_main_gui()
         self.create_main_widgets()
         self.style_widgets()
 
     def configure_main_gui(self):
-        self.title('tkinter application v1.0')
+        self.title('tkinter application v2.0')
         self.resizable(width=False, height=False)
         self.focus_force()
 
     def style_widgets(self):
-        theme_colors = {'foreground': '#c0e0de',
-                        'background': '#0d324d',
-                        'Third': '#000000',
-                        'Fourth': '#4f7cac',
-                        'Fifth': '#3c474b'}
+        theme_colors = {'light_blue': '#c0e0de',
+                        'dark_blue': '#0d324d',
+                        'dark_grey': '#2b303a',
+                        'almost_black': '#100007',
+                        'coral': '#ff220c'}
         style = ttk.Style(self)
         style.theme_use('clam')
         tkFont.families(self)
         font = 'default 16 bold'
         style.configure('.', font=font,
-                        foreground=theme_colors['foreground'],
-                        background=theme_colors['background'],
-                        fieldbackground=theme_colors['Fifth'],
-                        bordercolor=theme_colors['foreground'],
-                        lightcolor=theme_colors['foreground'],
-                        darkcolor=theme_colors['background'],
-                        troughcolor=theme_colors['background'],
-                        borderwidth=2,
-                        relief=theme_colors['foreground']
-                        )
-        # style.configure('TButton', font=font,
-        #                 foreground=theme_colors['foreground'],
-        #                 background=theme_colors['background'])
-        # style.configure('TEntry', font=font,
-        #                 foreground=theme_colors['foreground'],
-        #                 background=theme_colors['background'])
-        # style.configure('TCheckbutton', font=font,
-        #                 foreground=theme_colors['foreground'],
-        #                 background=theme_colors['background'])
-        # style.configure('TFrame', font=font,
-        #                 foreground=theme_colors['foreground'],
-        #                 background=theme_colors['background'])
-        # style.configure('TLabel', font=font,
-        #                 foreground=theme_colors['foreground'],
-        #                 background=theme_colors['background'])
-        # style.configure('TLabelFrame', font=font,
-        #                 foreground=theme_colors['foreground'],
-        #                 background=theme_colors['background'])
-        # style.configure('Horizontal.TProgressbar', font=font,
-        #                 foreground=theme_colors['foreground'],
-        #                 background=theme_colors['background'])
+                        foreground=theme_colors['light_blue'],
+                        background=theme_colors['dark_blue'],
+                        fieldbackground=theme_colors['almost_black'],
+                        bordercolor=theme_colors['light_blue'],
+                        lightcolor=theme_colors['light_blue'],
+                        darkcolor=theme_colors['dark_blue'],
+                        troughcolor=theme_colors['dark_blue'],
+                        borderwidth=1,
+                        relief=theme_colors['light_blue'])
+
+        style.map('TButton',
+                  foreground=[('active', theme_colors['dark_blue']),
+                              ('pressed', theme_colors['coral']),
+                              ('disabled', theme_colors['dark_grey'])],
+                  background=[('active', theme_colors['coral']),
+                              ('pressed', theme_colors['coral']),
+                              ('disabled', theme_colors['almost_black'])],
+                  highlightcolor=[('active', theme_colors['coral']),
+                                  ('pressed', theme_colors['coral']),
+                                  ('disabled', theme_colors['almost_black'])],
+                  bordercolor=[('active', theme_colors['coral']),
+                               ('pressed', theme_colors['coral']),
+                               ('disabled', theme_colors['dark_grey'])],
+                  troughcolor=[('active', theme_colors['coral']),
+                               ('pressed', theme_colors['coral']),
+                               ('disabled', theme_colors['dark_grey'])],
+                  lightcolor=[('active', theme_colors['coral']),
+                              ('pressed', theme_colors['coral']),
+                              ('disabled', theme_colors['dark_grey'])],
+                  darkcolor=[('active', theme_colors['coral']),
+                             ('pressed', theme_colors['coral']),
+                             ('disabled', theme_colors['dark_grey'])])
 
     def create_main_widgets(self):
         try:
@@ -132,6 +134,11 @@ class MainApplication(tk.Tk):
                                          variable=self.checkbox_variable_3,
                                          onvalue='Button_3', offvalue='')
             checkbox_3.grid(column=1, row=2, sticky='ew', padx=2, pady=2)
+
+            combobox_1 = ttk.Combobox(choices_frame, text='<Select Option>',
+                                      values=['Choice 1', 'Choice 2', 'Choice 3'],
+                                      textvariable=self.combobox_variable)
+            combobox_1.grid(column=2, row=0, sticky='ew', padx=2, pady=2)
 
             run_button = ttk.Button(main_frame, text='Run',
                                     command=self.run_application)
