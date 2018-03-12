@@ -21,6 +21,7 @@ class MainApplication(tk.Tk):
         self.checkbox_variable_2 = tk.StringVar()
         self.checkbox_variable_3 = tk.StringVar()
         self.combobox_variable = tk.StringVar()
+        self.combobox_variable.set('<Select Value>')
         self.configure_main_gui()
         self.create_main_widgets()
         self.style_widgets()
@@ -46,10 +47,9 @@ class MainApplication(tk.Tk):
                         fieldbackground=theme_colors['almost_black'],
                         bordercolor=theme_colors['light_blue'],
                         lightcolor=theme_colors['light_blue'],
-                        darkcolor=theme_colors['dark_blue'],
-                        troughcolor=theme_colors['dark_blue'],
-                        borderwidth=1,
-                        relief=theme_colors['light_blue'])
+                        darkcolor=theme_colors['light_blue'],
+                        troughcolor=theme_colors['almost_black'],
+                        relief=theme_colors['coral'])
 
         style.map('TButton',
                   foreground=[('active', theme_colors['dark_blue']),
@@ -73,9 +73,103 @@ class MainApplication(tk.Tk):
                   darkcolor=[('active', theme_colors['coral']),
                              ('pressed', theme_colors['coral']),
                              ('disabled', theme_colors['dark_grey'])])
+        style.map('TCheckbutton',
+                  foreground=[('active', theme_colors['coral']),
+                              ('pressed', theme_colors['coral']),
+                              ('disabled', theme_colors['dark_grey'])],
+                  background=[('active', theme_colors['dark_blue']),
+                              ('pressed', theme_colors['coral']),
+                              ('disabled', theme_colors['almost_black'])],
+                  indicatorcolor=[('selected', theme_colors['coral']),
+                                  ('pressed', theme_colors['coral']),
+                                  ('disabled', theme_colors['almost_black'])])
+
+        style.map('TCombobox',
+                  foreground=[('active', theme_colors['coral']),
+                              ('focus', theme_colors['coral']),
+                              ('!focus', theme_colors['light_blue']),
+                              ('readonly', theme_colors['coral']),
+                              ('disabled', theme_colors['dark_grey'])],
+                  background=[('focus', theme_colors['coral']),
+                              ('!focus', theme_colors['light_blue']),
+                              ('readonly', theme_colors['dark_blue']),
+                              ('disabled', theme_colors['almost_black'])],
+                  fieldbackground=[('focus', theme_colors['almost_black']),
+                                   ('!focus', theme_colors['almost_black']),
+                                   ('readonly', theme_colors['dark_grey']),
+                                   ('disabled', theme_colors['dark_grey'])],
+                  highlightcolor=[('active', theme_colors['coral']),
+                                  ('focus', theme_colors['coral']),
+                                  ('!focus', theme_colors['coral']),
+                                  ('disabled', theme_colors['almost_black'])],
+                  bordercolor=[('active', theme_colors['coral']),
+                               ('focus', theme_colors['coral']),
+                               ('!focus', theme_colors['light_blue']),
+                               ('disabled', theme_colors['almost_black'])],
+                  troughcolor=[('active', theme_colors['coral']),
+                               ('focus', theme_colors['coral']),
+                               ('!focus', theme_colors['light_blue']),
+                               ('disabled', theme_colors['almost_black'])],
+                  lightcolor=[('active', theme_colors['coral']),
+                              ('focus', theme_colors['coral']),
+                              ('!focus', theme_colors['light_blue']),
+                              ('disabled', theme_colors['almost_black'])],
+                  darkcolor=[('active', theme_colors['coral']),
+                             ('focus', theme_colors['coral']),
+                             ('!focus', theme_colors['light_blue']),
+                             ('disabled', theme_colors['almost_black'])])
+
+        style.map('TEntry',
+                  foreground=[('focus', theme_colors['coral']),
+                              ('!focus', theme_colors['light_blue']),
+                              ('readonly', theme_colors['light_blue']),
+                              ('disabled', theme_colors['dark_grey'])],
+                  fieldbackground=[('focus', theme_colors['almost_black']),
+                                   ('!focus', theme_colors['almost_black']),
+                                   ('readonly', theme_colors['dark_grey']),
+                                   ('disabled', theme_colors['dark_grey'])],
+                  highlightcolor=[('active', theme_colors['coral']),
+                                  ('focus', theme_colors['coral']),
+                                  ('!focus', theme_colors['coral']),
+                                  ('disabled', theme_colors['almost_black'])],
+                  bordercolor=[('active', theme_colors['coral']),
+                               ('focus', theme_colors['coral']),
+                               ('!focus', theme_colors['light_blue']),
+                               ('disabled', theme_colors['almost_black'])],
+                  troughcolor=[('active', theme_colors['coral']),
+                               ('focus', theme_colors['coral']),
+                               ('!focus', theme_colors['light_blue']),
+                               ('disabled', theme_colors['almost_black'])],
+                  lightcolor=[('active', theme_colors['coral']),
+                              ('focus', theme_colors['coral']),
+                              ('!focus', theme_colors['light_blue']),
+                              ('disabled', theme_colors['almost_black'])],
+                  darkcolor=[('active', theme_colors['coral']),
+                             ('focus', theme_colors['coral']),
+                             ('!focus', theme_colors['light_blue']),
+                             ('disabled', theme_colors['almost_black'])])
+        style.map('TRadiobutton',
+                  foreground=[('active', theme_colors['coral']),
+                              ('pressed', theme_colors['coral']),
+                              ('disabled', theme_colors['dark_grey'])],
+                  background=[('active', theme_colors['dark_blue']),
+                              ('pressed', theme_colors['coral']),
+                              ('disabled', theme_colors['almost_black'])],
+                  indicatorcolor=[('selected', theme_colors['coral']),
+                                  ('pressed', theme_colors['coral']),
+                                  ('disabled', theme_colors['almost_black'])])
+        style.configure('Horizontal.TProgressbar',
+                        foreground=theme_colors['coral'],
+                        background=theme_colors['coral'],
+                        bordercolor=theme_colors['light_blue'],
+                        troughcolor=theme_colors['light_blue'],
+                        lightcolor=theme_colors['coral'],
+                        darkcolor=theme_colors['coral'])
 
     def create_main_widgets(self):
         try:
+            entry_fonts = 'default 16 bold'
+
             main_frame = ttk.Frame(self)
             main_frame.grid(column=0, row=0, sticky='nw')
 
@@ -86,7 +180,7 @@ class MainApplication(tk.Tk):
             input_frame.grid(column=0, row=1, sticky='ew', padx=4, pady=4)
 
             input_entry = ttk.Entry(input_frame, textvariable=self.input_variable,
-                                    width=90)
+                                    width=90, font=entry_fonts)
             input_entry.grid(column=0, row=0, sticky='ew', padx=4, pady=4)
 
             input_button = ttk.Button(input_frame, text='Browse',
@@ -97,7 +191,7 @@ class MainApplication(tk.Tk):
             second_frame.grid(column=0, row=2, sticky='ew', padx=4, pady=4)
 
             second_entry = ttk.Entry(second_frame, textvariable=self.second_variable,
-                                     width=90)
+                                     width=90, font=entry_fonts)
             second_entry.grid(column=0, row=0, sticky='ew', padx=4, pady=4)
 
             second_button = ttk.Button(second_frame, text='Browse',
@@ -137,7 +231,9 @@ class MainApplication(tk.Tk):
 
             combobox_1 = ttk.Combobox(choices_frame, text='<Select Option>',
                                       values=['Choice 1', 'Choice 2', 'Choice 3'],
-                                      textvariable=self.combobox_variable)
+                                      textvariable=self.combobox_variable,
+                                      state='readonly',
+                                      font=entry_fonts)
             combobox_1.grid(column=2, row=0, sticky='ew', padx=2, pady=2)
 
             run_button = ttk.Button(main_frame, text='Run',
@@ -147,7 +243,7 @@ class MainApplication(tk.Tk):
             self.processing_frame = ttk.Labelframe(main_frame, text='Processing Frame')
             self.processing_frame.grid(column=0, row=5, padx=4, pady=4)
 
-            self.status_bar = ttk.Progressbar(self.processing_frame, mode='indeterminate',
+            self.status_bar = ttk.Progressbar(self.processing_frame, mode='determinate',
                                               length=300)
             self.status_bar.grid(column=0, row=0, padx=4, pady=4)
 
@@ -224,7 +320,6 @@ class MainApplication(tk.Tk):
         except Exception as e:
             self.status_bar.stop()
             return e
-
 
 if __name__ == '__main__':
     app = MainApplication(None)
