@@ -6,7 +6,9 @@ import tkMessageBox
 import tkFileDialog
 import tkFont
 import Queue
-import ScrolledText
+import os.path
+import zipfile
+
 
 
 class MainApplication(tk.Tk):
@@ -16,13 +18,12 @@ class MainApplication(tk.Tk):
         self.parent = parent
         self.queue = Queue.Queue()
         self.input_variable = tk.StringVar()
-        #self.input_variable.set(' <Select a file> ')
+        self.input_variable.set(r'C:/Users/Bennett/Documents/Python Scripts/DNCH.zip')
         self.second_variable = tk.StringVar()
-        #self.second_variable.set(' <Select a folder> ')
+        self.second_variable.set(r'C:\Users\Bennett\Documents\Python Scripts\Geodatabases.zip')
+        self.output_variable = tk.StringVar()
+        self.output_variable.set(r'C:\Users\Bennett\Documents\Python Scripts')
         self.radio_variable = tk.StringVar()
-        # self.checkbox_variable_1 = tk.StringVar()
-        # self.checkbox_variable_2 = tk.StringVar()
-        # self.checkbox_variable_3 = tk.StringVar()
         self.combobox_variable = tk.StringVar()
         self.combobox_variable.set('<Select DNC Scale>')
         self.configure_main_gui()
@@ -35,7 +36,7 @@ class MainApplication(tk.Tk):
         self.focus_force()
 
     def style_widgets(self):
-        self.theme_colors = {'light_blue': '#c0e0de',
+        theme_colors = {'light_blue': '#c0e0de',
                         'dark_blue': '#0d324d',
                         'dark_grey': '#2b303a',
                         'almost_black': '#100007',
@@ -45,129 +46,151 @@ class MainApplication(tk.Tk):
         tkFont.families(self)
         font = 'default 16 bold'
         style.configure('.', font=font,
-                        foreground=self.theme_colors['light_blue'],
-                        background=self.theme_colors['dark_blue'],
-                        fieldbackground=self.theme_colors['almost_black'],
-                        bordercolor=self.theme_colors['light_blue'],
-                        lightcolor=self.theme_colors['light_blue'],
-                        darkcolor=self.theme_colors['light_blue'],
-                        troughcolor=self.theme_colors['almost_black'],
-                        relief=self.theme_colors['coral'])
+                        foreground=theme_colors['light_blue'],
+                        background=theme_colors['dark_blue'],
+                        fieldbackground=theme_colors['almost_black'],
+                        bordercolor=theme_colors['light_blue'],
+                        lightcolor=theme_colors['light_blue'],
+                        darkcolor=theme_colors['light_blue'],
+                        troughcolor=theme_colors['almost_black'],
+                        relief=theme_colors['coral'])
 
         style.map('TButton',
-                  foreground=[('active', self.theme_colors['dark_blue']),
-                              ('pressed', self.theme_colors['coral']),
-                              ('disabled', self.theme_colors['dark_grey'])],
-                  background=[('active', self.theme_colors['coral']),
-                              ('pressed', self.theme_colors['coral']),
-                              ('disabled', self.theme_colors['almost_black'])],
-                  highlightcolor=[('active', self.theme_colors['coral']),
-                                  ('pressed', self.theme_colors['coral']),
-                                  ('disabled', self.theme_colors['almost_black'])],
-                  bordercolor=[('active', self.theme_colors['coral']),
-                               ('pressed', self.theme_colors['coral']),
-                               ('disabled', self.theme_colors['dark_grey'])],
-                  troughcolor=[('active', self.theme_colors['coral']),
-                               ('pressed', self.theme_colors['coral']),
-                               ('disabled', self.theme_colors['dark_grey'])],
-                  lightcolor=[('active', self.theme_colors['coral']),
-                              ('pressed', self.theme_colors['coral']),
-                              ('disabled', self.theme_colors['dark_grey'])],
-                  darkcolor=[('active', self.theme_colors['coral']),
-                             ('pressed', self.theme_colors['coral']),
-                             ('disabled', self.theme_colors['dark_grey'])])
+                  foreground=[('active', theme_colors['dark_blue']),
+                              ('pressed', theme_colors['coral']),
+                              ('disabled', theme_colors['dark_grey'])],
+                  background=[('active', theme_colors['coral']),
+                              ('pressed', theme_colors['coral']),
+                              ('disabled', theme_colors['almost_black'])],
+                  highlightcolor=[('active', theme_colors['coral']),
+                                  ('pressed', theme_colors['coral']),
+                                  ('disabled', theme_colors['almost_black'])],
+                  bordercolor=[('active', theme_colors['coral']),
+                               ('pressed', theme_colors['coral']),
+                               ('disabled', theme_colors['dark_grey'])],
+                  troughcolor=[('active', theme_colors['coral']),
+                               ('pressed', theme_colors['coral']),
+                               ('disabled', theme_colors['dark_grey'])],
+                  lightcolor=[('active', theme_colors['coral']),
+                              ('pressed', theme_colors['coral']),
+                              ('disabled', theme_colors['dark_grey'])],
+                  darkcolor=[('active', theme_colors['coral']),
+                             ('pressed', theme_colors['coral']),
+                             ('disabled', theme_colors['dark_grey'])])
         style.map('TCheckbutton',
-                  foreground=[('active', self.theme_colors['coral']),
-                              ('pressed', self.theme_colors['coral']),
-                              ('disabled', self.theme_colors['dark_grey'])],
-                  background=[('active', self.theme_colors['dark_blue']),
-                              ('pressed', self.theme_colors['coral']),
-                              ('disabled', self.theme_colors['almost_black'])],
-                  indicatorcolor=[('selected', self.theme_colors['coral']),
-                                  ('pressed', self.theme_colors['coral']),
-                                  ('disabled', self.theme_colors['almost_black'])])
+                  foreground=[('active', theme_colors['coral']),
+                              ('pressed', theme_colors['coral']),
+                              ('disabled', theme_colors['dark_grey'])],
+                  background=[('active', theme_colors['dark_blue']),
+                              ('pressed', theme_colors['coral']),
+                              ('disabled', theme_colors['almost_black'])],
+                  indicatorcolor=[('selected', theme_colors['coral']),
+                                  ('pressed', theme_colors['coral']),
+                                  ('disabled', theme_colors['almost_black'])])
 
         style.map('TCombobox',
-                  foreground=[
-                              ('focus', self.theme_colors['coral']),
-                              ('!focus', self.theme_colors['light_blue']),
-                              ('readonly', self.theme_colors['coral']),
-                              ('disabled', self.theme_colors['dark_grey'])],
-                  background=[('focus', self.theme_colors['coral']),
-                              ('!focus', self.theme_colors['light_blue']),
-                              ('readonly', self.theme_colors['dark_blue']),
-                              ('disabled', self.theme_colors['almost_black'])],
-                  fieldbackground=[('focus', self.theme_colors['almost_black']),
-                                   ('!focus', self.theme_colors['almost_black']),
-                                   ('readonly', self.theme_colors['dark_grey']),
-                                   ('disabled', self.theme_colors['dark_grey'])],
-                  highlightcolor=[('active', self.theme_colors['coral']),
-                                  ('focus', self.theme_colors['coral']),
-                                  ('!focus', self.theme_colors['coral']),
-                                  ('disabled', self.theme_colors['almost_black'])],
-                  bordercolor=[('active', self.theme_colors['coral']),
-                               ('focus', self.theme_colors['coral']),
-                               ('!focus', self.theme_colors['light_blue']),
-                               ('disabled', self.theme_colors['almost_black'])],
-                  troughcolor=[('active', self.theme_colors['coral']),
-                               ('focus', self.theme_colors['coral']),
-                               ('!focus', self.theme_colors['light_blue']),
-                               ('disabled', self.theme_colors['almost_black'])],
-                  lightcolor=[('active', self.theme_colors['coral']),
-                              ('focus', self.theme_colors['coral']),
-                              ('!focus', self.theme_colors['light_blue']),
-                              ('disabled', self.theme_colors['almost_black'])],
-                  darkcolor=[('active', self.theme_colors['coral']),
-                             ('focus', self.theme_colors['coral']),
-                             ('!focus', self.theme_colors['light_blue']),
-                             ('disabled', self.theme_colors['almost_black'])])
+                  foreground=[('active', theme_colors['coral']),
+                              ('focus', theme_colors['coral']),
+                              ('!focus', theme_colors['light_blue']),
+                              ('readonly', theme_colors['coral']),
+                              ('disabled', theme_colors['dark_grey'])],
+                  background=[('active', theme_colors['coral']),
+                              ('focus', theme_colors['coral']),
+                              ('!focus', theme_colors['light_blue']),
+                              ('readonly', theme_colors['dark_blue']),
+                              ('disabled', theme_colors['almost_black'])],
+                  fieldbackground=[('active', theme_colors['almost_black']),
+                                   ('focus', theme_colors['almost_black']),
+                                   ('!focus', theme_colors['almost_black']),
+                                   ('readonly', theme_colors['dark_grey']),
+                                   ('disabled', theme_colors['dark_grey'])],
+                  highlightcolor=[('active', theme_colors['coral']),
+                                  ('focus', theme_colors['coral']),
+                                  ('!focus', theme_colors['coral']),
+                                  ('readonly', theme_colors['almost_black']),
+                                  ('disabled', theme_colors['almost_black'])],
+                  indicatorcolor=[('selected', theme_colors['coral']),
+                                  ('pressed', theme_colors['coral']),
+                                  ('focus', theme_colors['coral']),
+                                  ('!focus', theme_colors['coral']),
+                                  ('disabled', theme_colors['almost_black'])],
+                  bordercolor=[('active', theme_colors['coral']),
+                               ('focus', theme_colors['coral']),
+                               ('!focus', theme_colors['light_blue']),
+                               ('readonly', theme_colors['almost_black']),
+                               ('disabled', theme_colors['almost_black'])],
+                  troughcolor=[('active', theme_colors['coral']),
+                               ('focus', theme_colors['coral']),
+                               ('!focus', theme_colors['light_blue']),
+                               ('readonly', theme_colors['almost_black']),
+                               ('disabled', theme_colors['almost_black'])],
+                  lightcolor=[('active', theme_colors['coral']),
+                              ('focus', theme_colors['coral']),
+                              ('!focus', theme_colors['light_blue']),
+                              ('readonly', theme_colors['almost_black']),
+                              ('disabled', theme_colors['almost_black'])],
+                  darkcolor=[('active', theme_colors['coral']),
+                             ('focus', theme_colors['coral']),
+                             ('!focus', theme_colors['light_blue']),
+                             ('readonly', theme_colors['almost_black']),
+                             ('disabled', theme_colors['almost_black'])])
 
         style.map('TEntry',
-                  foreground=[('focus', self.theme_colors['coral']),
-                              ('!focus', self.theme_colors['light_blue']),
-                              ('readonly', self.theme_colors['light_blue']),
-                              ('disabled', self.theme_colors['dark_grey'])],
-                  fieldbackground=[('focus', self.theme_colors['almost_black']),
-                                   ('!focus', self.theme_colors['almost_black']),
-                                   ('readonly', self.theme_colors['dark_grey']),
-                                   ('disabled', self.theme_colors['dark_grey'])],
-                  highlightcolor=[('active', self.theme_colors['coral']),
-                                  ('focus', self.theme_colors['coral']),
-                                  ('!focus', self.theme_colors['coral']),
-                                  ('disabled', self.theme_colors['almost_black'])],
-                  bordercolor=[('active', self.theme_colors['coral']),
-                               ('focus', self.theme_colors['coral']),
-                               ('!focus', self.theme_colors['light_blue']),
-                               ('disabled', self.theme_colors['almost_black'])],
-                  troughcolor=[('active', self.theme_colors['coral']),
-                               ('focus', self.theme_colors['coral']),
-                               ('!focus', self.theme_colors['light_blue']),
-                               ('disabled', self.theme_colors['almost_black'])],
-                  lightcolor=[('active', self.theme_colors['coral']),
-                              ('focus', self.theme_colors['coral']),
-                              ('!focus', self.theme_colors['light_blue']),
-                              ('disabled', self.theme_colors['almost_black'])],
-                  darkcolor=[('active', self.theme_colors['coral']),
-                             ('focus', self.theme_colors['coral']),
-                             ('!focus', self.theme_colors['light_blue']),
-                             ('disabled', self.theme_colors['almost_black'])])
+                  foreground=[('focus', theme_colors['coral']),
+                              ('!focus', theme_colors['light_blue']),
+                              ('readonly', theme_colors['light_blue']),
+                              ('disabled', theme_colors['dark_grey'])],
+                  fieldbackground=[('focus', theme_colors['almost_black']),
+                                   ('!focus', theme_colors['almost_black']),
+                                   ('readonly', theme_colors['dark_grey']),
+                                   ('disabled', theme_colors['dark_grey'])],
+                  highlightcolor=[('active', theme_colors['coral']),
+                                  ('focus', theme_colors['coral']),
+                                  ('!focus', theme_colors['coral']),
+                                  ('disabled', theme_colors['almost_black'])],
+                  indicatorcolor=[('selected', theme_colors['coral']),
+                                  ('pressed', theme_colors['coral']),
+                                  ('focus', theme_colors['coral']),
+                                  ('disabled', theme_colors['almost_black'])],
+                  bordercolor=[('active', theme_colors['coral']),
+                               ('focus', theme_colors['coral']),
+                               ('!focus', theme_colors['light_blue']),
+                               ('disabled', theme_colors['almost_black'])],
+                  troughcolor=[('active', theme_colors['coral']),
+                               ('focus', theme_colors['coral']),
+                               ('!focus', theme_colors['light_blue']),
+                               ('disabled', theme_colors['almost_black'])],
+                  lightcolor=[('active', theme_colors['coral']),
+                              ('focus', theme_colors['coral']),
+                              ('!focus', theme_colors['light_blue']),
+                              ('disabled', theme_colors['almost_black'])],
+                  darkcolor=[('active', theme_colors['coral']),
+                             ('focus', theme_colors['coral']),
+                             ('!focus', theme_colors['light_blue']),
+                             ('disabled', theme_colors['almost_black'])])
         style.map('TRadiobutton',
-                  foreground=[('active', self.theme_colors['coral']),
-                              ('pressed', self.theme_colors['coral']),
-                              ('disabled', self.theme_colors['dark_grey'])],
-                  background=[('active', self.theme_colors['dark_blue']),
-                              ('pressed', self.theme_colors['coral']),
-                              ('disabled', self.theme_colors['almost_black'])],
-                  indicatorcolor=[('selected', self.theme_colors['coral']),
-                                  ('pressed', self.theme_colors['coral']),
-                                  ('disabled', self.theme_colors['almost_black'])])
+                  foreground=[('active', theme_colors['coral']),
+                              ('pressed', theme_colors['coral']),
+                              ('focus', theme_colors['coral']),
+                              ('disabled', theme_colors['dark_grey'])],
+                  background=[('active', theme_colors['dark_blue']),
+                              ('pressed', theme_colors['coral']),
+                              ('disabled', theme_colors['almost_black'])],
+                  indicatorcolor=[('selected', theme_colors['coral']),
+                                  ('pressed', theme_colors['coral']),
+                                  ('focus', theme_colors['coral']),
+                                  ('disabled', theme_colors['almost_black'])],
+                  highlightcolor=[('active', theme_colors['coral']),
+                                  ('focus', theme_colors['coral']),
+                                  ('pressed', theme_colors['coral']),
+                                  ('disabled', theme_colors['almost_black'])])
         style.configure('Horizontal.TProgressbar',
-                        foreground=self.theme_colors['coral'],
-                        background=self.theme_colors['coral'],
-                        bordercolor=self.theme_colors['light_blue'],
-                        troughcolor=self.theme_colors['light_blue'],
-                        lightcolor=self.theme_colors['coral'],
-                        darkcolor=self.theme_colors['coral'])
+                        foreground=theme_colors['coral'],
+                        background=theme_colors['coral'],
+                        bordercolor=theme_colors['almost_black'],
+                        troughcolor=theme_colors['almost_black'],
+                        lightcolor=theme_colors['coral'],
+                        darkcolor=theme_colors['coral'])
 
     def create_main_widgets(self):
         try:
@@ -223,20 +246,31 @@ class MainApplication(tk.Tk):
                                        command=self.get_second_filepath)
             second_button.grid(column=1, row=2, sticky='ew', padx=4, pady=4)
 
+            output_frame = ttk.Labelframe(main_frame, text='Output Frame')
+            output_frame.grid(column=0, row=3, sticky='ew', padx=4, pady=4)
+
+            output_entry = ttk.Entry(output_frame, textvariable=self.output_variable,
+                                     width=75, font=entry_fonts)
+            output_entry.grid(column=0, row=0, sticky='ew', padx=4, pady=4)
+
+            output_button = ttk.Button(output_frame, text='Browse',
+                                       command=self.get_output_filepath)
+            output_button.grid(column=1, row=0, sticky='ew', padx=4, pady=4)
+
             processing_frame = ttk.Labelframe(main_frame, text='Processing Frame')
-            processing_frame.grid(column=0, row=3, padx=4, pady=4)
+            processing_frame.grid(column=0, row=4, padx=4, pady=4)
 
             self.run_button = ttk.Button(processing_frame, text='Run',
-                                    command=self.run_application)
+                                         command=self.run_application)
             self.run_button.grid(column=0, row=0, padx=4, pady=4)
 
             self.status_bar = ttk.Progressbar(processing_frame, mode='determinate',
                                               length=300)
             self.status_bar.grid(column=0, row=1, padx=4, pady=4)
-            self.status_bar.columnconfigure(0, weight=1)
 
             self.messages_text = tk.Text(processing_frame, wrap=tk.WORD, height=15, width=100)
-            self.messages_text.configure(state='disabled', background='black', foreground='#c0e0de')
+            self.messages_text.configure(state='disabled', background='#100007',
+                                         foreground='#c0e0de', font='default 12 bold')
             self.messages_text.grid(column=0, row=2, padx=4, pady=4, sticky='news')
 
         except Exception as e:
@@ -247,8 +281,29 @@ class MainApplication(tk.Tk):
         self.input_variable.set(input_filepath)
 
     def get_second_filepath(self):
-        input_filepath = tkFileDialog.askdirectory(title='Select Input Directory')
-        self.second_variable.set(input_filepath)
+        if self.radio_variable.get() == 'Geodatabase - .gdb':
+            input_filepath = tkFileDialog.askdirectory(title='Select Input .gdb')
+            self.second_variable.set(input_filepath)
+        elif self.radio_variable.get() == 'Zipfile - .zip':
+            input_filepath = tkFileDialog.askopenfilename(title='Select Input .zip')
+            self.second_variable.set(input_filepath)
+        else:
+            tkMessageBox.showwarning('Check file inputs', 'Please check the input files')
+
+    def get_output_filepath(self):
+        output_filepath = tkFileDialog.askdirectory(title='Select Output Directory')
+        self.output_variable.set(output_filepath)
+
+    def check_filepaths(self):
+        filepaths = [self.input_variable.get(), self.second_variable.get(),
+                     self.output_variable.get()]
+        for path in filepaths:
+            if os.path.exists(path):
+                pass
+            else:
+                return False
+
+        return True
 
     def write_to_messages(self, message):
         try:
@@ -271,7 +326,7 @@ class MainApplication(tk.Tk):
     def write_start_message(self):
         try:
             self.messages_text.configure(state='normal')
-            self.messages_text.insert('end', '{}Run: {}{}\n\n'.format(
+            self.messages_text.insert('end', '{}Run: {}{}\n'.format(
                 ('=' * 5), time.strftime("%c"), ('=' * 5)))
 
             self.messages_text.insert('end', 'Input: {}\n\n'.format(
@@ -280,9 +335,8 @@ class MainApplication(tk.Tk):
             self.messages_text.insert('end', 'Processing with: {}\n\n'.format(
                 self.second_variable.get()))
 
-            self.messages_text.insert('end', 'With these options: {}\n\n'.format(
-                [self.radio_variable.get(), self.checkbox_variable_1.get(),
-                 self.checkbox_variable_2.get(), self.checkbox_variable_3.get()]))
+            self.messages_text.insert('end', 'Output: {}\n\n'.format(
+                self.output_variable.get()))
 
             self.messages_text.configure(state='disabled')
         except Exception as e:
@@ -291,21 +345,25 @@ class MainApplication(tk.Tk):
 
     def run_application(self):
         try:
-            self.run_button.configure(state='disabled')
-            self.clear_messages()
-            self.status_bar.start()
-            self.write_start_message()
-            self.thread = ThreadedClient(self.queue, self.input_variable.get(),
-                                         self.second_variable.get())
-            self.thread.start()
-            self.periodiccall()
-
+            if self.check_filepaths():
+                self.run_button.configure(state='disabled')
+                self.clear_messages()
+                self.write_start_message()
+                self.thread = ThreadedClient(self.queue,
+                                             self.input_variable.get(),
+                                             self.second_variable.get(),
+                                             self.output_variable.get())
+                self.thread.start()
+                self.periodiccall()
+            else:
+                tkMessageBox.showwarning('Enter filepaths', 'Please check all filepaths')
         except Exception as e:
-            self.status_bar.stop()
             return e
+            tkMessageBox.showerror('Error', e)
 
     def periodiccall(self):
         self.checkqueue()
+        self.status_bar.start()
         if self.thread.is_alive():
             self.after(100, self.periodiccall)
         else:
@@ -321,23 +379,41 @@ class MainApplication(tk.Tk):
             except Queue.Empty:
                 pass
 
+
 class ThreadedClient(threading.Thread):
 
-    def __init__(self, queue, input_1, input_2):
+    def __init__(self, queue, input_1, input_2, output_1):
         threading.Thread.__init__(self)
         self.queue = queue
         self.input_1 = input_1
         self.input_2 = input_2
+        self.output_1 = output_1
 
     def run(self):
         time.sleep(2)
-        message = "\nNow running with input: {}\nand second input: {}\n".format(
-            self.input_1, self.input_2)
+        message = 'Starting Schema Comparison...\n'
         self.queue.put(message)
-        for x in range(1, 5):
-            time.sleep(2)
-            msg = "Function {} finished...\n".format(x)
-            self.queue.put(msg)
+        time.sleep(2)
+        message_2 = 'Unzipping base schema from: {}\n'.format(self.input_1)
+        self.queue.put(message_2)
+        self.unzip_files(self.input_2)
+        msg = 'Base schema unzipped\n'
+        self.queue.put(msg)
+
+    def unzip_files(self, zip_file):
+        unzip_location = os.path.join(self.output_1,'extracted_zip')
+        zip_filename = os.path.splitext(os.path.basename(zip_file))[0]
+        gdb_list = []
+        with zipfile.ZipFile(zip_file, 'r') as zfile:
+            namelist = zfile.namelist()
+            for name in namelist:
+                print os.path.split(name)[0]
+
+
+
+            #self.queue.put()
+
+
 
 if __name__ == '__main__':
     app = MainApplication(None)
