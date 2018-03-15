@@ -382,36 +382,36 @@ class MainApplication(tk.Tk):
 
 class ThreadedClient(threading.Thread):
 
-    def __init__(self, queue, input_1, input_2, output_1):
+    def __init__(self, queue, base, test, output):
         threading.Thread.__init__(self)
         self.queue = queue
-        self.input_1 = input_1
-        self.input_2 = input_2
-        self.output_1 = output_1
+        self.base = base
+        self.test = test
+        self.output = output
 
     def run(self):
-        time.sleep(2)
-        message = 'Starting Schema Comparison...\n'
-        self.queue.put(message)
-        time.sleep(2)
-        message_2 = 'Unzipping base schema from: {}\n'.format(self.input_1)
-        self.queue.put(message_2)
-        self.unzip_files(self.input_2)
-        msg = 'Base schema unzipped\n'
-        self.queue.put(msg)
+        self.queue.put('Starting Schema Comparison...\n\n')
+        self.unzip_files(self.base)
+        self.unzip_files(self.test)
 
     def unzip_files(self, zip_file):
-        unzip_location = os.path.join(self.output_1,'extracted_zip')
-        zip_filename = os.path.splitext(os.path.basename(zip_file))[0]
-        gdb_list = []
+        unzip_location = os.path.join(self.output,'extracted_zip_schemas')
+        self.queue.put('Extracting {}\nto: {}\n\n'.format(zip_file, unzip_location))
         with zipfile.ZipFile(zip_file, 'r') as zfile:
             namelist = zfile.namelist()
-            for name in namelist:
-                print os.path.split(name)[0]
+            unique_gdbs = set([os.path.split(gdb)[0] for gdb in namelist])
+            if len(unique_gdbs) == 1:
+                zfile.extractall(unzip_location)
+            elif len(unique_gdbs) > 1:
+                selected_gdb = list(unique_gdbs)[0] # change to selection from GUI list
+                extract = [item for item in namelist if item.startswith(selected_gdb)]
+                zfile.extractall(unzip_location, extract)
+            else:
+                self.queue.put('There are no geodatabases in this .zip')
 
 
 
-            #self.queue.put()
+
 
 
 
