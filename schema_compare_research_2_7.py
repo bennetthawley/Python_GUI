@@ -10,7 +10,6 @@ import os.path
 import zipfile
 
 
-
 class MainApplication(tk.Tk):
 
     def __init__(self, parent, *args, **kwargs):
@@ -390,29 +389,45 @@ class ThreadedClient(threading.Thread):
         self.output = output
 
     def run(self):
-        self.queue.put('Starting Schema Comparison...\n\n')
-        self.unzip_files(self.base)
-        self.unzip_files(self.test)
+        try:
+            self.queue.put('Starting Schema Comparison...\n\n')
+            self.base_schema_path = self.unzip_files(self.base)
+            if self.test.endswith('.zip'):
+                self.test_schema_path = self.unzip_files(self.test)
+            elif self.test.endswith('.gdb'):
+                self.test_schema_path = self.test
+            else:
+                self.queue.put('The test file is neither a .zip or .gdb')
+            self.schema_compare(self.base_schema_path, self.test_schema_path, self.output)
+        except Exception as e:
+            tkMessageBox.showerror('Error', e)
 
     def unzip_files(self, zip_file):
-        unzip_location = os.path.join(self.output,'extracted_zip_schemas')
-        self.queue.put('Extracting {}\nto: {}\n\n'.format(zip_file, unzip_location))
-        with zipfile.ZipFile(zip_file, 'r') as zfile:
-            namelist = zfile.namelist()
-            unique_gdbs = set([os.path.split(gdb)[0] for gdb in namelist])
-            if len(unique_gdbs) == 1:
-                zfile.extractall(unzip_location)
-            elif len(unique_gdbs) > 1:
-                selected_gdb = list(unique_gdbs)[0] # change to selection from GUI list
-                extract = [item for item in namelist if item.startswith(selected_gdb)]
-                zfile.extractall(unzip_location, extract)
-            else:
-                self.queue.put('There are no geodatabases in this .zip')
+        try:
+            unzip_location = os.path.join(self.output, 'extracted_zip_schemas')
+            self.queue.put('Extracting {}\nto: {}\n\n'.format(zip_file, unzip_location))
+            with zipfile.ZipFile(zip_file, 'r') as zfile:
+                namelist = zfile.namelist()
+                unique_gdbs = set([os.path.split(gdb)[0] for gdb in namelist])
+                if len(unique_gdbs) == 1:
+                    zfile.extractall(unzip_location)
+                    extracted_schema = os.path.join(unzip_location,
+                                                    list(unique_gdbs)[0])
+                    return extracted_schema
+                elif len(unique_gdbs) > 1:
+                    selected_gdb = list(unique_gdbs)[0]  # change to selection from GUI list
+                    extract = [item for item in namelist if item.startswith(selected_gdb)]
+                    zfile.extractall(unzip_location, extract)
+                    extracted_schema = os.path.join(unzip_location,
+                                                    list(unique_gdbs)[0])
+                    return extracted_schema
+                else:
+                    self.queue.put('There are no geodatabases in this .zip')
+        except Exception as e:
+            tkMessageBox.showerror('Error', e)
 
-
-
-
-
+    def schema_compare(self, base, test, output):
+        import arcpy
 
 
 if __name__ == '__main__':
