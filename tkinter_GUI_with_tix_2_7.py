@@ -148,12 +148,29 @@ class main_frame(ttk.Frame):
     def create_main_widgets(self):
 
         combo_box = Tix.ComboBox(self)
-        combo_box.grid(column=0, row=0)
+        combo_box.grid(column=0, row=0, sticky='news', padx=4, pady=4)
 
         button_box = Tix.ButtonBox(self)
         button_box.add('button_1', text='Button_1')
         button_box.add('button_2', text='Button_2')
-        button_box.grid(column=0, row=1, sticky='news')
+        button_box.grid(column=0, row=1, sticky='news', padx=4, pady=4)
+
+        control = Tix.Control(self)
+        control.grid(column=0, row=2, sticky='news', padx=4, pady=4)
+
+        label_entry = Tix.LabelEntry(self, label="Label for entry")
+        label_entry.grid(column=0, row=3, sticky='news', padx=4, pady=4)
+
+        meter = Tix.Meter(self)
+        meter.grid(column=0, row=4, sticky='news', padx=4, pady=4)
+
+        options = Tix.OptionMenu(self)
+        options.grid(column=0, row=5, sticky='news', padx=4, pady=4)
+
+        file_entry = Tix.FileEntry(self)
+        file_entry.grid(column=0, row=6, sticky='news', padx=4, pady=4)
+
+
 
 
 if __name__ == '__main__':
