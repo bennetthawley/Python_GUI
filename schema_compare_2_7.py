@@ -4,8 +4,10 @@ import xml.etree.ElementTree as ET
 import csv
 
 # from arcpy import CheckOutExtension
+#
 # arcpy.CheckOutExtension('Datareviewer')
 # from arcpy import GeodatabaseSchemaCompare_Reviewer
+#
 # arcpy.env.overwriteOutput = True
 
 print "arcpy imported"
@@ -36,8 +38,7 @@ def Schema_Compare(base, test, output):
 def parse_xml_to_csv(input_xml, output):
     output_csv = os.path.join(output, 'differences.csv')
     with open(output_csv, 'wb') as csvfile:
-        fieldnames = ['Type', 'Category', 'Message', 'CatalogPath',
-                      'FeatureDataset', 'ShapeType', 'Field', 'Domain']
+        fieldnames = ['Category', 'Type', 'CatalogPath', 'Domain', 'Field', 'Exception']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
 
@@ -46,15 +47,35 @@ def parse_xml_to_csv(input_xml, output):
         difference_tags = root.findall('.//Difference')
         for tag in difference_tags:
             csv_row = {}
-            print tag.findall('.//')
             for field in fieldnames:
                 if tag.find(field) is not None:
                     csv_row[field] = tag.find(field).text
-            mark_exception(csv_row)
+            mark_exceptions(csv_row)
             writer.writerow(csv_row)
 
-def mark_exception(dictionary):
-    print dictionary
+
+def mark_exceptions(csv_row_dictionary):
+    domain_exceptions = {'Category': ['Domains'],
+                         'Type': ['Additional Domain'],
+                         'Domain': ['dnch_test', 'test']}
+    featureclass_exceptions = {'Category': ['FeatureClass'],
+                               'Type': ['Additional FeatureClass Field'],
+                               'CatalogPath': ['example1'],
+                               'Field': ['extra']}
+
+    if csv_row_dictionary['Category'] in domain_exceptions['Category']:
+        if csv_row_dictionary['Type'] in domain_exceptions['Type']:
+            if csv_row_dictionary['Domain'] in domain_exceptions['Domain']:
+                csv_row_dictionary['Exception'] = 'Known Exception'
+    elif csv_row_dictionary['Category'] in featureclass_exceptions['Category']:
+        if csv_row_dictionary['Type'] in featureclass_exceptions['Type']:
+            if csv_row_dictionary['CatalogPath'] in featureclass_exceptions['CatalogPath']:
+                if csv_row_dictionary['Field'] in featureclass_exceptions['Field']:
+                    csv_row_dictionary['Exception'] = 'Known Exception'
+    else:
+        pass
+    return csv_row_dictionary
+
 
 differences = Schema_Compare(base_gdb, test_gdb, output_dir)
 parse_xml_to_csv(differences, output_dir)

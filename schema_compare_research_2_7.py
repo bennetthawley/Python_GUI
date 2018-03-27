@@ -8,6 +8,8 @@ import tkFont
 import Queue
 import os.path
 import zipfile
+import xml.etree.ElementTree as ET
+import csv
 
 
 class MainApplication(tk.Tk):
@@ -17,11 +19,11 @@ class MainApplication(tk.Tk):
         self.parent = parent
         self.queue = Queue.Queue()
         self.input_variable = tk.StringVar()
-        self.input_variable.set(r'C:/Users/Bennett/Documents/Python Scripts/DNCH.zip')
+        self.input_variable.set(r'C:/Users/Bennett/Documents/Testing/Base.zip')
         self.second_variable = tk.StringVar()
-        self.second_variable.set(r'C:\Users\Bennett\Documents\Python Scripts\Geodatabases.zip')
+        self.second_variable.set(r'C:/Users/Bennett/Documents/Testing/Test.zip')
         self.output_variable = tk.StringVar()
-        self.output_variable.set(r'C:\Users\Bennett\Documents\Python Scripts')
+        self.output_variable.set(r'C:/Users/Bennett/Documents/Testing')
         self.radio_variable = tk.StringVar()
         self.combobox_variable = tk.StringVar()
         self.combobox_variable.set('<Select DNC Scale>')
@@ -294,8 +296,7 @@ class MainApplication(tk.Tk):
         self.output_variable.set(output_filepath)
 
     def check_filepaths(self):
-        filepaths = [self.input_variable.get(), self.second_variable.get(),
-                     self.output_variable.get()]
+        filepaths = [self.input_variable.get(), self.second_variable.get()]
         for path in filepaths:
             if os.path.exists(path):
                 pass
@@ -308,6 +309,7 @@ class MainApplication(tk.Tk):
         try:
             self.messages_text.configure(state='normal')
             self.messages_text.insert('end', message)
+            self.messages_text.see('end')
             self.messages_text.configure(state='disabled')
         except Exception as e:
             self.status_bar.stop()
@@ -337,6 +339,8 @@ class MainApplication(tk.Tk):
             self.messages_text.insert('end', 'Output: {}\n\n'.format(
                 self.output_variable.get()))
 
+            self.messages_text.see('end')
+
             self.messages_text.configure(state='disabled')
         except Exception as e:
             self.status_bar.stop()
@@ -348,6 +352,7 @@ class MainApplication(tk.Tk):
                 self.run_button.configure(state='disabled')
                 self.clear_messages()
                 self.write_start_message()
+                self.status_bar.start()
                 self.thread = ThreadedClient(self.queue,
                                              self.input_variable.get(),
                                              self.second_variable.get(),
@@ -362,9 +367,9 @@ class MainApplication(tk.Tk):
 
     def periodiccall(self):
         self.checkqueue()
-        self.status_bar.start()
         if self.thread.is_alive():
             self.after(100, self.periodiccall)
+            self.status_bar.step(10)
         else:
             self.run_button.configure(state="active")
             self.status_bar.stop()
@@ -398,9 +403,10 @@ class ThreadedClient(threading.Thread):
                 self.test_schema_path = self.test
             else:
                 self.queue.put('The test file is neither a .zip or .gdb')
-            self.schema_compare(self.base_schema_path, self.test_schema_path, self.output)
+            differences = (self.schema_compare(self.base_schema_path, self.test_schema_path, self.output))
+            self.parse_xml_to_csv(differences, self.output)
         except Exception as e:
-            tkMessageBox.showerror('Error', e)
+            self.queue.put(e)
 
     def unzip_files(self, zip_file):
         try:
@@ -427,8 +433,68 @@ class ThreadedClient(threading.Thread):
             tkMessageBox.showerror('Error', e)
 
     def schema_compare(self, base, test, output):
-        import arcpy
+        self.queue.put("Checking Out ArcPy\n\n")
+        from arcpy import CheckOutExtension
+        arcpy.CheckOutExtension('Datareviewer')
+        from arcpy import GeodatabaseSchemaCompare_Reviewer
+        arcpy.env.overwriteOutput = True
+        self.queue.put('Arcpy checked out\n\n')
 
+        base_name = os.path.basename(base).split('.')[0]
+        test_name = os.path.basename(test).split('.')[0]
+
+        output_folder_name = "SchemaCompare_{}_to_{}".format(base_name, test_name)
+
+        output_folder_location = os.path.join(output, output_folder_name)
+
+        if not os.path.exists(output_folder_location):
+            os.makedirs(output_folder_location)
+
+        result = GeodatabaseSchemaCompare_Reviewer(base, test, output_folder_location)
+        self.queue.put(result.getMessages())
+
+        difference_xml = os.path.join(output_folder_location, 'SchemaCompare', 'difference.xml')
+        return difference_xml
+
+    def parse_xml_to_csv(self, input_xml, output):
+        output_csv = os.path.join(output, 'differences.csv')
+        with open(output_csv, 'wb') as csvfile:
+            fieldnames = ['Category', 'Type', 'CatalogPath', 'Domain', 'Field', 'Exception']
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writeheader()
+
+            tree = ET.parse(input_xml)
+            root = tree.getroot()
+            difference_tags = root.findall('.//Difference')
+            for tag in difference_tags:
+                csv_row = {}
+                for field in fieldnames:
+                    if tag.find(field) is not None:
+                        csv_row[field] = tag.find(field).text
+                self.mark_exceptions(csv_row)
+                writer.writerow(csv_row)
+
+    def mark_exceptions(self, csv_row_dictionary):
+        domain_exceptions = {'Category': ['Domains'],
+                             'Type': ['Additional Domain'],
+                             'Domain': ['dnch_test', 'test']}
+        featureclass_exceptions = {'Category': ['FeatureClass'],
+                                   'Type': ['Additional FeatureClass Field'],
+                                   'CatalogPath': ['example1'],
+                                   'Field': ['extra']}
+
+        if csv_row_dictionary['Category'] in domain_exceptions['Category']:
+            if csv_row_dictionary['Type'] in domain_exceptions['Type']:
+                if csv_row_dictionary['Domain'] in domain_exceptions['Domain']:
+                    csv_row_dictionary['Exception'] = 'Known Exception'
+        elif csv_row_dictionary['Category'] in featureclass_exceptions['Category']:
+            if csv_row_dictionary['Type'] in featureclass_exceptions['Type']:
+                if csv_row_dictionary['CatalogPath'] in featureclass_exceptions['CatalogPath']:
+                    if csv_row_dictionary['Field'] in featureclass_exceptions['Field']:
+                        csv_row_dictionary['Exception'] = 'Known Exception'
+        else:
+            pass
+        return csv_row_dictionary
 
 if __name__ == '__main__':
     app = MainApplication(None)
