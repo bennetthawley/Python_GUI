@@ -11,6 +11,7 @@ import ttk
 import xml.etree.ElementTree as ET
 import zipfile
 import shutil
+import gc
 
 
 class MainApplication(tk.Tk):
@@ -380,6 +381,7 @@ class MainApplication(tk.Tk):
             self.thread.join()
             del self.thread
             del self.queue
+            gc.collect()
             self.write_to_messages('\nProcessing complete!')
             self.write_text_to_log()
 
@@ -456,14 +458,6 @@ class ThreadedClient(threading.Thread):
 
     def schema_compare(self, base, test, output):
         try:
-            self.queue.put("Checking Out ArcPy\n\n")
-            from arcpy import CheckOutExtension
-            from arcpy import CheckInExtension
-            CheckOutExtension('Datareviewer')
-            from arcpy import GeodatabaseSchemaCompare_Reviewer
-            arcpy.env.overwriteOutput = True
-            self.queue.put('Arcpy checked out\n\n')
-
             base_name = os.path.basename(base).split('.')[0]
             test_name = os.path.basename(test).split('.')[0]
 
@@ -474,15 +468,29 @@ class ThreadedClient(threading.Thread):
             if not os.path.exists(output_folder_location):
                 os.makedirs(output_folder_location)
 
-            result = GeodatabaseSchemaCompare_Reviewer(base, test, output_folder_location)
-            self.queue.put(result.getMessages())
-
-            CheckInExtension('Datareviewer')
+            self.arcpy_schema_compare(base, output_folder_location, test)
 
             difference_xml = os.path.join(output_folder_location, 'SchemaCompare', 'difference.xml')
             return difference_xml
         except Exception as e:
             self.queue.put(e)
+
+    def arcpy_schema_compare(self, base, output_folder_location, test):
+        self.queue.put("Importing ArcPy\n\n")
+        from arcpy import CheckOutExtension
+        from arcpy import CheckInExtension
+        from arcpy import env
+        CheckOutExtension('Datareviewer')
+        self.queue.put("Checking Out Datareviewer Extension\n\n")
+        from arcpy import GeodatabaseSchemaCompare_Reviewer
+        env.overwriteOutput = True
+        self.queue.put('Arcpy and Datareviewer checked out\n\n')
+        result = GeodatabaseSchemaCompare_Reviewer(base, test,
+                                                   output_folder_location)  # THIS IS CAUSING PYTHON TO CRASH ON RE_RUN
+        self.queue.put(result.getMessages())
+        CheckInExtension('Datareviewer')
+        del result
+        self.queue.put("\n\nChecking In Datareviewer Extension\n\n")
 
     def parse_xml_to_csv(self, input_xml, output):
         output_csv = os.path.join(output, 'differences.csv')
