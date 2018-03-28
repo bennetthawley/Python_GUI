@@ -10,6 +10,7 @@ import tkMessageBox
 import ttk
 import xml.etree.ElementTree as ET
 import zipfile
+import shutil
 
 
 class MainApplication(tk.Tk):
@@ -418,6 +419,14 @@ class ThreadedClient(threading.Thread):
                 self.queue.put('The test file is neither a .zip or .gdb')
             differences = (self.schema_compare(self.base_schema_path, self.test_schema_path, self.output))
             self.parse_xml_to_csv(differences, self.output)
+            self.remove_extracted_files(self.output)
+        except Exception as e:
+            self.queue.put(e)
+
+    def remove_extracted_files(self, output):
+        try:
+            unzip_location = os.path.join(output, 'extracted_zip_schemas')
+            shutil.rmtree(unzip_location)
         except Exception as e:
             self.queue.put(e)
 
