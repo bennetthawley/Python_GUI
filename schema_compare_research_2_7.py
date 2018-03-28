@@ -1,15 +1,15 @@
+import Queue
 import Tkinter as tk
+import csv
+import os.path
 import threading
 import time
-import ttk
-import tkMessageBox
 import tkFileDialog
 import tkFont
-import Queue
-import os.path
-import zipfile
+import tkMessageBox
+import ttk
 import xml.etree.ElementTree as ET
-import csv
+import zipfile
 
 
 class MainApplication(tk.Tk):
@@ -17,7 +17,7 @@ class MainApplication(tk.Tk):
     def __init__(self, parent, *args, **kwargs):
         tk.Tk.__init__(self, parent, *args, **kwargs)
         self.parent = parent
-        self.queue = Queue.Queue()
+        # self.queue = Queue.Queue()
         self.input_variable = tk.StringVar()
         self.input_variable.set(r'C:/Users/Bennett/Documents/Testing/Base.zip')
         self.second_variable = tk.StringVar()
@@ -302,7 +302,6 @@ class MainApplication(tk.Tk):
                 pass
             else:
                 return False
-
         return True
 
     def write_to_messages(self, message):
@@ -327,13 +326,13 @@ class MainApplication(tk.Tk):
     def write_start_message(self):
         try:
             self.messages_text.configure(state='normal')
-            self.messages_text.insert('end', '{}Run: {}{}\n'.format(
+            self.messages_text.insert('end', '{}Run: {}{}\n\n'.format(
                 ('=' * 5), time.strftime("%c"), ('=' * 5)))
 
-            self.messages_text.insert('end', 'Input: {}\n\n'.format(
+            self.messages_text.insert('end', 'Base Input: {}\n\n'.format(
                 self.input_variable.get()))
 
-            self.messages_text.insert('end', 'Processing with: {}\n\n'.format(
+            self.messages_text.insert('end', 'Test Input: {}\n\n'.format(
                 self.second_variable.get()))
 
             self.messages_text.insert('end', 'Output: {}\n\n'.format(
@@ -353,27 +352,35 @@ class MainApplication(tk.Tk):
                 self.clear_messages()
                 self.write_start_message()
                 self.status_bar.start()
-                self.thread = ThreadedClient(self.queue,
-                                             self.input_variable.get(),
-                                             self.second_variable.get(),
-                                             self.output_variable.get())
-                self.thread.start()
-                self.periodiccall()
+                self.start_thread(self.input_variable.get(), self.second_variable.get(), self.output_variable.get())
             else:
                 tkMessageBox.showwarning('Enter filepaths', 'Please check all filepaths')
         except Exception as e:
             return e
             tkMessageBox.showerror('Error', e)
 
+    def start_thread(self, input_var, second_var, output_var):
+        self.queue = Queue.Queue()
+        self.thread = ThreadedClient(self.queue,
+                                     input_var,
+                                     second_var,
+                                     output_var)
+        self.thread.start()
+        self.periodiccall()
+
     def periodiccall(self):
         self.checkqueue()
         if self.thread.is_alive():
             self.after(100, self.periodiccall)
-            self.status_bar.step(10)
+            self.status_bar.step()
         else:
             self.run_button.configure(state="active")
             self.status_bar.stop()
+            self.thread.join()
+            del self.thread
+            del self.queue
             self.write_to_messages('\nProcessing complete!')
+            self.write_text_to_log()
 
     def checkqueue(self):
         while self.queue.qsize():
@@ -382,6 +389,12 @@ class MainApplication(tk.Tk):
                 self.write_to_messages(msg)
             except Queue.Empty:
                 pass
+
+    def write_text_to_log(self):
+        log_text = self.messages_text.get("1.0", 'end-1c')
+        output_txt_log = os.path.join(self.output_variable.get(), 'schema_compare_log.txt')
+        with open(output_txt_log, 'w') as log:
+            log.write(log_text)
 
 
 class ThreadedClient(threading.Thread):
@@ -430,31 +443,37 @@ class ThreadedClient(threading.Thread):
                 else:
                     self.queue.put('There are no geodatabases in this .zip')
         except Exception as e:
-            tkMessageBox.showerror('Error', e)
+            self.queue.put(e)
 
     def schema_compare(self, base, test, output):
-        self.queue.put("Checking Out ArcPy\n\n")
-        from arcpy import CheckOutExtension
-        arcpy.CheckOutExtension('Datareviewer')
-        from arcpy import GeodatabaseSchemaCompare_Reviewer
-        arcpy.env.overwriteOutput = True
-        self.queue.put('Arcpy checked out\n\n')
+        try:
+            self.queue.put("Checking Out ArcPy\n\n")
+            from arcpy import CheckOutExtension
+            from arcpy import CheckInExtension
+            CheckOutExtension('Datareviewer')
+            from arcpy import GeodatabaseSchemaCompare_Reviewer
+            arcpy.env.overwriteOutput = True
+            self.queue.put('Arcpy checked out\n\n')
 
-        base_name = os.path.basename(base).split('.')[0]
-        test_name = os.path.basename(test).split('.')[0]
+            base_name = os.path.basename(base).split('.')[0]
+            test_name = os.path.basename(test).split('.')[0]
 
-        output_folder_name = "SchemaCompare_{}_to_{}".format(base_name, test_name)
+            output_folder_name = "SchemaCompare_{}_to_{}".format(base_name, test_name)
 
-        output_folder_location = os.path.join(output, output_folder_name)
+            output_folder_location = os.path.join(output, output_folder_name)
 
-        if not os.path.exists(output_folder_location):
-            os.makedirs(output_folder_location)
+            if not os.path.exists(output_folder_location):
+                os.makedirs(output_folder_location)
 
-        result = GeodatabaseSchemaCompare_Reviewer(base, test, output_folder_location)
-        self.queue.put(result.getMessages())
+            result = GeodatabaseSchemaCompare_Reviewer(base, test, output_folder_location)
+            self.queue.put(result.getMessages())
 
-        difference_xml = os.path.join(output_folder_location, 'SchemaCompare', 'difference.xml')
-        return difference_xml
+            CheckInExtension('Datareviewer')
+
+            difference_xml = os.path.join(output_folder_location, 'SchemaCompare', 'difference.xml')
+            return difference_xml
+        except Exception as e:
+            self.queue.put(e)
 
     def parse_xml_to_csv(self, input_xml, output):
         output_csv = os.path.join(output, 'differences.csv')
@@ -487,6 +506,7 @@ class ThreadedClient(threading.Thread):
             if csv_row_dictionary['Type'] in domain_exceptions['Type']:
                 if csv_row_dictionary['Domain'] in domain_exceptions['Domain']:
                     csv_row_dictionary['Exception'] = 'Known Exception'
+
         elif csv_row_dictionary['Category'] in featureclass_exceptions['Category']:
             if csv_row_dictionary['Type'] in featureclass_exceptions['Type']:
                 if csv_row_dictionary['CatalogPath'] in featureclass_exceptions['CatalogPath']:
@@ -495,6 +515,7 @@ class ThreadedClient(threading.Thread):
         else:
             pass
         return csv_row_dictionary
+
 
 if __name__ == '__main__':
     app = MainApplication(None)
