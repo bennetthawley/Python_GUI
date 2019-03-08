@@ -1,10 +1,10 @@
+import logging
 import threading
-import time
-
 import tkinter as tk
-from tkinter import filedialog
 from tkinter import messagebox
 from tkinter import ttk
+
+logger = logging.getLogger(__name__)
 
 
 class MainApplication(tk.Tk):
@@ -72,60 +72,60 @@ class MainApplication(tk.Tk):
             main_label = ttk.Label(main_frame, text='Main Label')
             main_label.grid(column=0, row=0, sticky='w', padx=4, pady=4)
 
-            input_frame = ttk.Labelframe(main_frame, text='Input Frame')
-            input_frame.grid(column=0, row=1, sticky='ew', padx=4, pady=4)
-
-            input_entry = ttk.Entry(input_frame,
-                                    textvariable=self.input_variable,
-                                    width=90)
-            input_entry.grid(column=0, row=0, sticky='ew', padx=4, pady=4)
-
-            input_button = ttk.Button(input_frame, text='Browse',
-                                      command=self.get_input_filepath)
-            input_button.grid(column=1, row=0, sticky='ew', padx=4, pady=4)
-
-            second_frame = ttk.Labelframe(main_frame, text='Second Frame')
-            second_frame.grid(column=0, row=2, sticky='ew', padx=4, pady=4)
-
-            second_entry = ttk.Entry(second_frame,
-                                     textvariable=self.second_variable,
-                                     width=90)
-            second_entry.grid(column=0, row=0, sticky='ew', padx=4, pady=4)
-
-            second_button = ttk.Button(second_frame, text='Browse',
-                                       command=self.get_second_filepath)
-            second_button.grid(column=1, row=0, sticky='ew', padx=4, pady=4)
-
-            choices_frame = ttk.Labelframe(main_frame, text='Select Options')
-            choices_frame.grid(column=0, row=3, sticky='ew', padx=4, pady=4)
-
-            radio_button_1 = ttk.Radiobutton(choices_frame, text='Option 1',
-                                             value='Option 1',
-                                             variable=self.radio_variable)
-            radio_button_1.grid(column=0, row=0, sticky='ew', padx=2, pady=2)
-            radio_button_2 = ttk.Radiobutton(choices_frame, text='Option 2',
-                                             value='Option 2',
-                                             variable=self.radio_variable)
-            radio_button_2.grid(column=0, row=1, sticky='ew', padx=2, pady=2)
-            radio_button_3 = ttk.Radiobutton(choices_frame, text='Option 3',
-                                             value='Option 3',
-                                             variable=self.radio_variable)
-            radio_button_3.grid(column=0, row=2, sticky='ew', padx=2, pady=2)
-
-            checkbox_1 = ttk.Checkbutton(choices_frame, text='Button 1',
-                                         variable=self.checkbox_variable_1,
-                                         onvalue='Button_1', offvalue='')
-            checkbox_1.grid(column=1, row=0, sticky='ew', padx=2, pady=2)
-
-            checkbox_2 = ttk.Checkbutton(choices_frame, text='Button 2',
-                                         variable=self.checkbox_variable_2,
-                                         onvalue='Button_2', offvalue='')
-            checkbox_2.grid(column=1, row=1, sticky='ew', padx=2, pady=2)
-
-            checkbox_3 = ttk.Checkbutton(choices_frame, text='Button 3',
-                                         variable=self.checkbox_variable_3,
-                                         onvalue='Button_3', offvalue='')
-            checkbox_3.grid(column=1, row=2, sticky='ew', padx=2, pady=2)
+            # input_frame = ttk.Labelframe(main_frame, text='Input Frame')
+            # input_frame.grid(column=0, row=1, sticky='ew', padx=4, pady=4)
+            #
+            # input_entry = ttk.Entry(input_frame,
+            #                         textvariable=self.input_variable,
+            #                         width=90)
+            # input_entry.grid(column=0, row=0, sticky='ew', padx=4, pady=4)
+            #
+            # input_button = ttk.Button(input_frame, text='Browse',
+            #                           command=self.get_input_filepath)
+            # input_button.grid(column=1, row=0, sticky='ew', padx=4, pady=4)
+            #
+            # second_frame = ttk.Labelframe(main_frame, text='Second Frame')
+            # second_frame.grid(column=0, row=2, sticky='ew', padx=4, pady=4)
+            #
+            # second_entry = ttk.Entry(second_frame,
+            #                          textvariable=self.second_variable,
+            #                          width=90)
+            # second_entry.grid(column=0, row=0, sticky='ew', padx=4, pady=4)
+            #
+            # second_button = ttk.Button(second_frame, text='Browse',
+            #                            command=self.get_second_filepath)
+            # second_button.grid(column=1, row=0, sticky='ew', padx=4, pady=4)
+            #
+            # choices_frame = ttk.Labelframe(main_frame, text='Select Options')
+            # choices_frame.grid(column=0, row=3, sticky='ew', padx=4, pady=4)
+            #
+            # radio_button_1 = ttk.Radiobutton(choices_frame, text='Option 1',
+            #                                  value='Option 1',
+            #                                  variable=self.radio_variable)
+            # radio_button_1.grid(column=0, row=0, sticky='ew', padx=2, pady=2)
+            # radio_button_2 = ttk.Radiobutton(choices_frame, text='Option 2',
+            #                                  value='Option 2',
+            #                                  variable=self.radio_variable)
+            # radio_button_2.grid(column=0, row=1, sticky='ew', padx=2, pady=2)
+            # radio_button_3 = ttk.Radiobutton(choices_frame, text='Option 3',
+            #                                  value='Option 3',
+            #                                  variable=self.radio_variable)
+            # radio_button_3.grid(column=0, row=2, sticky='ew', padx=2, pady=2)
+            #
+            # checkbox_1 = ttk.Checkbutton(choices_frame, text='Button 1',
+            #                              variable=self.checkbox_variable_1,
+            #                              onvalue='Button_1', offvalue='')
+            # checkbox_1.grid(column=1, row=0, sticky='ew', padx=2, pady=2)
+            #
+            # checkbox_2 = ttk.Checkbutton(choices_frame, text='Button 2',
+            #                              variable=self.checkbox_variable_2,
+            #                              onvalue='Button_2', offvalue='')
+            # checkbox_2.grid(column=1, row=1, sticky='ew', padx=2, pady=2)
+            #
+            # checkbox_3 = ttk.Checkbutton(choices_frame, text='Button 3',
+            #                              variable=self.checkbox_variable_3,
+            #                              onvalue='Button_3', offvalue='')
+            # checkbox_3.grid(column=1, row=2, sticky='ew', padx=2, pady=2)
 
             run_button = ttk.Button(main_frame, text='Run',
                                     command=self.run_application)
@@ -148,24 +148,26 @@ class MainApplication(tk.Tk):
         except Exception as e:
             messagebox.showerror('Error', e)
 
-    def get_input_filepath(self):
-        input_filepath = filedialog.askopenfilename(title='Select Input File')
-        self.input_variable.set(input_filepath)
-
-    def get_second_filepath(self):
-        input_filepath = filedialog.askdirectory(title='Select Input Directory')
-        self.second_variable.set(input_filepath)
+    # def get_input_filepath(self):
+    #     input_filepath = filedialog.askopenfilename(title='Select Input File')
+    #     self.input_variable.set(input_filepath)
+    #
+    # def get_second_filepath(self):
+    #     input_filepath = filedialog.askdirectory(title='Select Input Directory')
+    #     self.second_variable.set(input_filepath)
 
     def run_application(self):
         try:
             self.main_thread = threading.Thread(target=self.processing_function)
             self.clear_messages()
             self.status_bar.start()
-            self.write_start_message()
+            # self.write_start_message()
+            # raise ValueError('Something bad')
             self.main_thread.start()
         except Exception as e:
             self.status_bar.stop()
-            return e
+            logger.exception(e)
+
 
     def processing_function(self):
         try:
@@ -175,14 +177,16 @@ class MainApplication(tk.Tk):
             my_dict = {}
 
             summary_message = self.add_to_dict(my_dict)
-            time.sleep(1)
+
             self.write_to_messages(summary_message)
+            raise ValueError("something Bad")
 
             self.write_to_messages('\n\nProcess has completed!')
             self.status_bar.stop()
         except Exception as e:
             self.status_bar.stop()
-            return str(e)
+            logger.exception(e)
+            return e
 
     def add_to_dict(self, dict):
         try:
@@ -205,6 +209,7 @@ class MainApplication(tk.Tk):
 
         except Exception as e:
             self.status_bar.stop()
+            logger.exception(e)
             return e
 
     def write_to_messages(self, message):
@@ -214,7 +219,8 @@ class MainApplication(tk.Tk):
             self.messages_text.configure(state='disabled')
         except Exception as e:
             self.status_bar.stop()
-            return e
+            logger.exception(e)
+            raise
 
     def clear_messages(self):
         try:
@@ -225,29 +231,29 @@ class MainApplication(tk.Tk):
             self.status_bar.stop()
             return e
 
-    def write_start_message(self):
-        try:
-            self.messages_text.configure(state='normal')
-            self.messages_text.insert('end', '{}Run: {}{}\n\n'.format(
-                ('=' * 5), time.strftime("%c"), ('=' * 5)))
-
-            self.messages_text.insert('end', 'Input: {}\n\n'.format(
-                self.input_variable.get()))
-
-            self.messages_text.insert('end', 'Processing with: {}\n\n'.format(
-                self.second_variable.get()))
-
-            self.messages_text.insert('end',
-                                      'With these options: {}\n\n'.format(
-                                          [self.radio_variable.get(),
-                                           self.checkbox_variable_1.get(),
-                                           self.checkbox_variable_2.get(),
-                                           self.checkbox_variable_3.get()]))
-
-            self.messages_text.configure(state='disabled')
-        except Exception as e:
-            self.status_bar.stop()
-            return e
+    # def write_start_message(self):
+    #     try:
+    #         self.messages_text.configure(state='normal')
+    #         self.messages_text.insert('end', '{}Run: {}{}\n\n'.format(
+    #             ('=' * 5), time.strftime("%c"), ('=' * 5)))
+    #
+    #         self.messages_text.insert('end', 'Input: {}\n\n'.format(
+    #             self.input_variable.get()))
+    #
+    #         self.messages_text.insert('end', 'Processing with: {}\n\n'.format(
+    #             self.second_variable.get()))
+    #
+    #         self.messages_text.insert('end',
+    #                                   'With these options: {}\n\n'.format(
+    #                                       [self.radio_variable.get(),
+    #                                        self.checkbox_variable_1.get(),
+    #                                        self.checkbox_variable_2.get(),
+    #                                        self.checkbox_variable_3.get()]))
+    #
+    #         self.messages_text.configure(state='disabled')
+    #     except Exception as e:
+    #         self.status_bar.stop()
+    #         return e
 
 
 if __name__ == '__main__':
