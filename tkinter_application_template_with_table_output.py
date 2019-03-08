@@ -1,5 +1,6 @@
 import logging
 import threading
+import time
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
@@ -8,15 +9,16 @@ from tkinter import ttk
 class WidgetLogger(logging.Handler):
     def __init__(self, widget):
         logging.Handler.__init__(self)
-        self.setLevel(logging.INFO)
-        self.formatter = logging.Formatter(
-            '%(asctime)s - %(levelname)s - %(message)s')
+        formatter = logging.Formatter(
+            '%(asctime)s --- %(levelname)s ---\n'
+            '%(message)s\n\n',
+            datefmt='%Y-%m-%d %H:%M:%S')
+        self.setFormatter(formatter)
         self.widget = widget
         self.widget.config(state='disabled')
 
     def emit(self, record):
         self.widget.config(state='normal')
-        # Append message (record) to the widget
         self.widget.insert(tk.END, self.format(record) + '\n')
         self.widget.see(tk.END)  # Scroll to the bottom
         self.widget.config(state='disabled')
@@ -39,13 +41,13 @@ class MainApplication(tk.Tk):
         self.create_main_widgets()
         self.style_widgets()
 
-        # setting up the logger using the WidgetLogger class
+        # create a new logger object with name of '__name__'
         self.logger = logging.getLogger(__name__)
+        # sets logging on the tkinter text widget using WidgetLogger handler object
         text_logger = WidgetLogger(self.messages_text)
-        # logging.basicConfig(filename='test.log',
-        #     level=logging.INFO,
-        #     format='%(asctime)s - %(levelname)s - %(message)s')
-
+        # sets logger to log messages of "INFO" level and above
+        self.logger.setLevel(logging.INFO)
+        # sets the created handler object on the logger
         self.logger.addHandler(text_logger)
 
     def configure_main_gui(self):
@@ -113,9 +115,6 @@ class MainApplication(tk.Tk):
             self.messages_text.configure(state='disabled')
             self.messages_text.grid(column=0, row=1, padx=4, pady=4,
                                     sticky='ew')
-
-
-
         except Exception as e:
             messagebox.showerror('Error', e)
 
@@ -125,6 +124,7 @@ class MainApplication(tk.Tk):
             self.clear_messages()
             self.status_bar.start()
             self.main_thread.start()
+            self.logger.info(' Application Started')
         except Exception as e:
             self.status_bar.stop()
             self.logger.exception(e)
@@ -132,16 +132,18 @@ class MainApplication(tk.Tk):
 
     def processing_function(self):
         try:
-            self.write_to_messages('Process starting...\n\n')
             self.status_bar.start()
+            self.logger.info(' Processing started\n')
+            time.sleep(2)
 
             my_dict = {}
 
             summary_message = self.add_to_dict(my_dict)
 
             self.write_to_messages(summary_message)
-            self.write_to_messages('\n\nProcess has completed!')
+            # self.write_to_messages('\n\nProcess has completed!\n\n')
             self.status_bar.stop()
+            self.logger.info('\nProcessing complete\n')
         except Exception as e:
             self.status_bar.stop()
             self.logger.exception(e)
@@ -162,7 +164,6 @@ class MainApplication(tk.Tk):
                 dict_message += "\n{:<8} {:<12} {:<10}\n".format(k, schema,
                                                                  _class)
                 dict_message += '-' * 32
-
             return dict_message
 
         except Exception as e:
@@ -181,7 +182,6 @@ class MainApplication(tk.Tk):
 
     def clear_messages(self):
         try:
-            raise Exception("Stuff Happened")
             self.messages_text.configure(state='normal')
             self.messages_text.delete('1.0', tk.END)
             self.messages_text.configure(state='disabled')
